@@ -1,7 +1,7 @@
 "use client"
 import { Input } from '@nextui-org/input'
 import { Button } from '@nextui-org/button'
-import { Checkbox } from '@nextui-org/react'
+import { Checkbox, Select, SelectItem } from '@nextui-org/react'
 
 
 import React, { useState } from 'react'
@@ -53,16 +53,16 @@ const FacultyForm = () => {
         </div>
         <div>
           <label>Full Day:</label>
-          {/* <Checkbox
+          <Checkbox
             name="fullDay"
             checked={formData.fullDay}
             onChange={handleChange}
-          /> */}
+          />
         </div>
       </div>
       <div className="mb-4">
         <label>Time:</label>
-        {/* <Select
+        <Select
           name="time"
           value={formData.time}
           onChange={handleChange}
@@ -70,15 +70,15 @@ const FacultyForm = () => {
         >
           <SelectItem value="AM">AM</SelectItem>
           <SelectItem value="PM">PM</SelectItem>
-        </Select> */}
+        </Select>
       </div>
       <div className="mb-4">
         <label>After School Duty:</label>
-        {/* <Checkbox
+        <Checkbox
           name="afterSchoolDuty"
           checked={formData.afterSchoolDuty}
           onChange={handleChange}
-        /> */}
+        />
       </div>
       <div className="mb-4">
         <label>Duty:</label>
@@ -86,7 +86,7 @@ const FacultyForm = () => {
       </div>
       <div className="mb-4">
         <label>Reason for Request:</label>
-        {/* <Select
+        <Select
           name="reason"
           value={formData.reason}
           onChange={handleChange}
@@ -95,7 +95,7 @@ const FacultyForm = () => {
           <SelectItem value="Personal">Personal</SelectItem>
           <SelectItem value="Professional">Professional</SelectItem>
           <SelectItem value="Office">Office</SelectItem>
-        </Select> */}
+        </Select>
       </div>
       <div className="mb-4">
         <label>Staff Signature:</label>
