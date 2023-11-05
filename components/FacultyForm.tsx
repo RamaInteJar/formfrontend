@@ -1,10 +1,9 @@
 "use client"
-import { Input } from '@nextui-org/input'
-import { Button } from '@nextui-org/button'
-import { Checkbox, Select, SelectItem } from '@nextui-org/react'
-
-
-import React, { useState } from 'react'
+import { Input } from '@nextui-org/react'
+import { Button } from '@nextui-org/react'
+import {Select, SelectItem } from '@nextui-org/react'
+import { Checkbox } from '@nextui-org/react'
+import { useState } from 'react'
 const FacultyForm = () => {
   const [formData, setFormData] = useState({
     staffName: '',
@@ -18,7 +17,7 @@ const FacultyForm = () => {
     staffSignature: '',
     dated: '',
   })
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target
     const val = type === 'checkbox' ? checked : value
     setFormData((prevFormData) => ({
@@ -44,7 +43,7 @@ const FacultyForm = () => {
       </div>
       <div className="flex mx-auto mb-4">
         <div>
-          <label>Sub Need:</label>
+          <label>Sub Needed:</label>
           <Checkbox
             name="subNeed"
             checked={formData.subNeed}
@@ -68,8 +67,8 @@ const FacultyForm = () => {
           onChange={handleChange}
           label="Time"
         >
-          <SelectItem value="AM">AM</SelectItem>
-          <SelectItem value="PM">PM</SelectItem>
+          <SelectItem value="AM" key={''}>AM</SelectItem>
+          <SelectItem value="PM" key={''}>PM</SelectItem>
         </Select>
       </div>
       <div className="mb-4">
@@ -92,9 +91,9 @@ const FacultyForm = () => {
           onChange={handleChange}
           label="Reason for Request:"
         >
-          <SelectItem value="Personal">Personal</SelectItem>
-          <SelectItem value="Professional">Professional</SelectItem>
-          <SelectItem value="Office">Office</SelectItem>
+          <SelectItem value="Personal" key={''}>Personal</SelectItem>
+          <SelectItem value="Professional" key={''}>Professional</SelectItem>
+          <SelectItem value="Office" key={''}>Office</SelectItem>
         </Select>
       </div>
       <div className="mb-4">
