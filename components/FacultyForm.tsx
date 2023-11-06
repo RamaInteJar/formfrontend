@@ -1,120 +1,172 @@
-"use client"
-import { Input } from '@nextui-org/react'
-import { Button } from '@nextui-org/react'
-import {Select, SelectItem } from '@nextui-org/react'
-import { Checkbox } from '@nextui-org/react'
-import { useState } from 'react'
+'use client';
+import { useAuth } from '@/providers/authProvider';
+import { submitForm } from '@/utils/apiCalls';
+import { Input } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
+import { Select, SelectItem } from '@nextui-org/react';
+import { Checkbox } from '@nextui-org/react';
+import { useState } from 'react';
+
+const timeData = [
+  {
+    id: 1,
+    times: 'AM',
+  },
+  {
+    id: 2,
+    times: 'PM',
+  },
+];
+const reasonData = [
+  {
+    id: 1,
+    reason: 'Personal',
+  },
+  {
+    id: 2,
+    reason: 'Professional',
+  },
+  {
+    id: 3,
+    reason: 'Others',
+  },
+];
+
 const FacultyForm = () => {
   const [formData, setFormData] = useState({
-    staffName: '',
-    dates: '',
-    subNeed: false,
-    fullDay: false,
-    time: '',
-    afterSchoolDuty: false,
+    sub_needed: false,
+    full_day: false,
+    times: '',
+    after_school: false,
     duty: '',
     reason: '',
-    staffSignature: '',
-    dated: '',
-  })
+  });
+  const { accessToken } = useAuth();
+
+  const [timeValue, setTimeValue] = useState('');
+  const [reasonValue, setReasonValue] = useState('');
+
   const handleChange = (e: any) => {
-    const { name, value, type, checked } = e.target
-    const val = type === 'checkbox' ? checked : value
+    const { name, value, type, checked } = e.target;
+    const val = type === 'checkbox' ? checked : value;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: val,
-    }))
-  }
-  return (
-    <form>
-      <div className="flex mx-auto mb-4">
-        <div className="w-full mr-5">
-          <label>Faculty/Staff Name:</label>
-          <Input
-            name="staffName"
-            value={formData.staffName}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="w-full">
-          <label>Dates Requesting:</label>
-          <Input name="dates" value={formData.dates} onChange={handleChange} />
-        </div>
-      </div>
-      <div className="flex mx-auto mb-4">
-        <div>
-          <label>Sub Needed:</label>
-          <Checkbox
-            name="subNeed"
-            checked={formData.subNeed}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Full Day:</label>
-          <Checkbox
-            name="fullDay"
-            checked={formData.fullDay}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-      <div className="mb-4">
-        <label>Time:</label>
-        <Select
-          name="time"
-          value={formData.time}
-          onChange={handleChange}
-          label="Time"
-        >
-          <SelectItem value="AM" key={''}>AM</SelectItem>
-          <SelectItem value="PM" key={''}>PM</SelectItem>
-        </Select>
-      </div>
-      <div className="mb-4">
-        <label>After School Duty:</label>
-        <Checkbox
-          name="afterSchoolDuty"
-          checked={formData.afterSchoolDuty}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="mb-4">
-        <label>Duty:</label>
-        <Input name="duty" value={formData.duty} onChange={handleChange} />
-      </div>
-      <div className="mb-4">
-        <label>Reason for Request:</label>
-        <Select
-          name="reason"
-          value={formData.reason}
-          onChange={handleChange}
-          label="Reason for Request:"
-        >
-          <SelectItem value="Personal" key={''}>Personal</SelectItem>
-          <SelectItem value="Professional" key={''}>Professional</SelectItem>
-          <SelectItem value="Office" key={''}>Office</SelectItem>
-        </Select>
-      </div>
-      <div className="mb-4">
-        <label>Staff Signature:</label>
-        <Input
-          name="staffSignature"
-          value={formData.staffSignature}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="mb-4">
-        <label>Dated:</label>
-        <Input name="dated" value={formData.dated} onChange={handleChange} />
-      </div>
-      <div className="mb-4">
-        <Button type="submit" color="primary" variant="bordered">
-          Submit
-        </Button>
-      </div>
-    </form>
-  )
-}
+    }));
+  };
 
-export default FacultyForm
+  console.log(formData.full_day)
+
+  const handleTimeChange = (e: any) => {
+    setTimeValue(e.target.value);
+  };
+  const handleReasonChange = (e: any) => {
+    setReasonValue(e.target.value);
+  };
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    // Add time and reason values manually to formData before sending the form data
+    const updatedFormData = {
+      ...formData,
+      times: timeValue,
+      reason: reasonValue,
+    };
+
+    try {
+      await submitForm(updatedFormData, accessToken);
+
+      console.log('Form submitted successfully:', updatedFormData);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center px-6 ">
+      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-900 dark:border-gray-700">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-4 md:space-y-6 sm:p-8"
+        >
+          <div className="mb-4">
+            <label>Duty:</label>
+            <Input name="duty" value={formData.duty} onChange={handleChange} />
+          </div>
+          <div className="flex mx-auto mb-4">
+            <div>
+              <label>Sub Needed:</label>
+              <Checkbox
+                name="sub_needed"
+                checked={formData.sub_needed}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label>Full Day:</label>
+              <Checkbox
+                name="full_day"
+                checked={formData.full_day}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <div className="mb-4">
+            <label>After School Duty:</label>
+            <Checkbox
+              name="afterSchoolDuty"
+              checked={formData.after_school}
+              onChange={handleChange}
+            />
+          </div>
+
+          {!formData.full_day && (
+            <div className="mb-4">
+              <label>Time:</label>
+              <Select
+                value={timeValue}
+                name="times"
+                onChange={handleTimeChange}
+                label="Time"
+              >
+                {timeData.map((times) => (
+                  <SelectItem value={times.times} key={times.times}>
+                    {times.times}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          )}
+          <div className="mb-4">
+            <label>Reason for Request:</label>
+            <Select
+              value={reasonValue}
+              name="reason"
+              onChange={handleReasonChange}
+              label="Reason for Request:"
+            >
+              {reasonData.map((item) => (
+                <SelectItem value={item.reason} key={item.reason}>
+                  {item.reason}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+          <div className="mb-4">
+            <Button
+              type="submit"
+              color="primary"
+              variant="bordered"
+              className="w-full"
+            >
+              Submit
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default FacultyForm;
