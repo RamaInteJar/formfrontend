@@ -29,3 +29,21 @@ export const submitForm = async (
     throw error; // Handle the error appropriately in your application
   }
 };
+
+export const fetchFacultyForms = async (authToken: string | null) => {
+  try {
+    const response = await axios.get(`${baseUrl}/faculty/forms`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log(response.data);
+
+    return response.data; 
+  } catch (error) {
+    console.error('Error fetching faculty forms:', error);
+    throw error; 
+  }
+};

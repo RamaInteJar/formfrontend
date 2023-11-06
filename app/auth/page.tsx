@@ -37,27 +37,23 @@ const LoginPage = () => {
             Sign in to your account
           </h1>
           <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <Input
-                name="email"
-                isRequired
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="name@company.com"
-              />
-            </div>
-            <div>
-              <Input
-                name="password"
-                isRequired
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+            <Input
+              name="email"
+              isRequired
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="name@company.com"
+            />
+            <Input
+              name="password"
+              isRequired
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
             <div className="flex items-center justify-between">
               <div className="flex items-start">
                 <div className="flex items-center h-5">

@@ -57,8 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
-    Cookies.remove("access_token");
-    Cookies.remove("refresh_token");
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
   };
 
   useEffect(() => {
