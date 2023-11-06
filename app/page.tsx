@@ -17,10 +17,10 @@ import { useEffect } from "react";
 export default function Home() {
   const { accessToken } = useAuth();
 
-  useEffect(() => {
-    if (!accessToken) {
-      redirect("/auth");
-    }
-  }, [accessToken]);
-  return accessToken ? <FacultyForm /> : <LoginPage />;
+  // useEffect(() => {
+  //   if (!accessToken) {
+  //     redirect("/auth");
+  //   }
+  // }, []);
+  return  <FacultyForm /> ;
 }
