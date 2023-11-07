@@ -66,6 +66,10 @@ const columns = [
     label: 'TIME',
   },
   {
+    key: 'after_school',
+    label: 'AFTER SCHOOL',
+  },
+  {
     key: 'full_day',
     label: 'FULL DAY',
   },
