@@ -28,8 +28,18 @@ import {
 } from '@/components/icons';
 
 import { Logo } from '@/components/icons';
+import { useAuth } from '@/providers/authProvider';
+import { useRouter } from 'next/navigation';
 
 export const Navbar = () => {
+  const { accessToken, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/auth');
+  };
+
   const searchInput = (
     <Input
       aria-label="Search"
@@ -87,15 +97,15 @@ export const Navbar = () => {
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig.links.sponsor}
-            variant="flat"
-          >
-            user
-          </Button>
+          {accessToken && (
+            <Button
+              className="text-sm font-normal text-default-600 bg-default-100"
+              onClick={handleLogout}
+              variant="flat"
+            >
+              Logout
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
 
