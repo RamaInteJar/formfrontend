@@ -22,9 +22,9 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    login(formData.email, formData.password);
+    await login(formData.email, formData.password);
 
     router.push('/');
   };

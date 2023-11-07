@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/providers/authProvider';
+import { AuthProvider, useAuth } from '@/providers/authProvider';
 import { fetchFacultyForms } from '@/utils/apiCalls';
 import {
   Table,
@@ -42,11 +42,11 @@ const rows = [
 
 const columns = [
   {
-    key: 'facultY_id',
+    key: 'faculty_id',
     label: 'FACULTY ID',
   },
   {
-    key: 'user',
+    key: 'users_ct',
     label: 'USER',
   },
   {
@@ -58,12 +58,16 @@ const columns = [
     label: 'REASON',
   },
   {
-    key: 'subneeded',
-    label: 'SUB NEEDED',
+    key: 'sub_needed',
+    label: 'SUBNEEDED',
   },
   {
-    key: 'time',
+    key: 'times',
     label: 'TIME',
+  },
+  {
+    key: 'full_day',
+    label: 'FULL DAY',
   },
   {
     key: 'status',
@@ -75,13 +79,10 @@ const FacultyPage = () => {
   const [forms, setForms] = useState([]);
   const { accessToken } = useAuth();
 
-  console.log(accessToken);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchFacultyForms(accessToken);
-        console.log(data)
         setForms(data);
       } catch (error) {
         console.log(error);
@@ -91,23 +92,25 @@ const FacultyPage = () => {
     fetchData();
   }, [accessToken]);
 
-  console.log(forms);
+  console.log('form', forms);
 
   return (
-    <Table aria-label="Example table with dynamic content">
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={rows}>
-        {(item) => (
-          <TableRow key={item.key}>
-            {(columnKey) => (
-              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+      <Table aria-label="Example table with dynamic content">
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={forms}>
+          {(item) => (
+            <TableRow key={item}>
+              {(columnKey) => (
+                <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
   );
 };
 
