@@ -1,19 +1,38 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
-import { baseUrl } from "@/config/apiConfig";
+import { createContext, useContext, useEffect, useState } from 'react';
+import axios, { AxiosError } from 'axios';
+import Cookies from 'js-cookie';
+import { baseUrl } from '@/config/apiConfig';
 
 interface User {
   id: number;
   username: string;
 }
 
+type regiterType = {
+  first_name: string;
+  last_name: string;
+  username: string;
+  email: string;
+  password: string;
+  confirmpassword: string;
+  phone: string;
+};
+
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   user: User | null;
+  register: (
+    first_name:string,
+    last_name:string,
+    email:string,
+    username:string,
+    phone:string,
+    password:string,
+    confirmpassword:string
+  ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -28,27 +47,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const accessToken = Cookies.get("accessToken");
-    const refreshToken = Cookies.get("refreshToken");
+    const accessToken = Cookies.get('accessToken');
+    const refreshToken = Cookies.get('refreshToken');
     if (accessToken && refreshToken) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
     }
   }, []);
 
+  const register = async (
+    first_name,
+    last_name,
+    email,
+    username,
+    phone,
+    password,
+    confirmpassword
+  ) => {
+    try {
+      const response = await axios.post<regiterType>(
+        `${baseUrl}` + '/accounts/register',
+        {
+          first_name,
+          last_name,
+          email,
+          username,
+          phone,
+          password,
+          confirmpassword,
+        }
+      );
+      if (response.status == 201) {
+        console.log('User registered successfull');
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+      if (error.response) {
+        console.error('Server response:', error.response.data);
+      }
+    }
+  };
+
   const login = async (email: string, password: string) => {
     try {
       const res = await axios.post<{
         access: string;
         refresh: string;
-      }>(`${baseUrl}` + "/accounts/token", {
+      }>(`${baseUrl}` + '/accounts/token', {
         email,
         password,
       });
       setAccessToken(res.data.access);
       setRefreshToken(res.data.refresh);
-      Cookies.set("accessToken", res.data.access);
-      Cookies.set("refreshToken", res.data.refresh);
+      Cookies.set('accessToken', res.data.access);
+      Cookies.set('refreshToken', res.data.refresh);
     } catch (err) {
       console.log(err);
     }
@@ -88,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           (originalRequest as any)._retry = true;
           try {
             const refershResponse = await axios.post<{ access_token: string }>(
-              `${baseUrl}` + "/accounts/refresh",
+              `${baseUrl}` + '/accounts/refresh',
               {
                 refresh_token: refreshToken,
               }
@@ -99,7 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               return axios(originalRequest);
             }
           } catch (refreshError) {
-            console.error("Token refersh failed", refreshError);
+            console.error('Token refersh failed', refreshError);
             logout();
             return Promise.reject(error);
           }
@@ -116,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, user, login, logout }}
+      value={{ accessToken, refreshToken, user, login, logout, register }}
     >
       {children}
     </AuthContext.Provider>
@@ -126,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within AuthProvider");
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };

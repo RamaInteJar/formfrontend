@@ -55,7 +55,7 @@ const FacultyForm = () => {
     }));
   };
 
-  console.log(formData.full_day)
+  console.log(formData.full_day);
 
   const handleTimeChange = (e: any) => {
     setTimeValue(e.target.value);
@@ -90,10 +90,13 @@ const FacultyForm = () => {
           onSubmit={handleSubmit}
           className="p-6 space-y-4 md:space-y-6 sm:p-8"
         >
-          <div className="mb-4">
-            <label>Duty:</label>
-            <Input name="duty" value={formData.duty} onChange={handleChange} />
-          </div>
+          <Input
+            name="duty"
+            value={formData.duty}
+            type="text"
+            label="Duty"
+            onChange={handleChange}
+          />
           <div className="flex mx-auto mb-4">
             <div>
               <label>Sub Needed:</label>

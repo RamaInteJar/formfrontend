@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Input, Select, SelectItem } from '@nextui-org/react';
+import { Button, Checkbox, Select, SelectItem } from '@nextui-org/react';
 import { useAuth } from '@/providers/authProvider';
 import { useRouter } from 'next/navigation';
+import { Link } from '@nextui-org/link';
+import { Input } from '@nextui-org/input';
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -83,6 +85,12 @@ const LoginPage = () => {
             >
               Sign in
             </Button>
+            <div className="flex flex-row gap-2 items-center justify-center">
+              <span className="text-gray-500 dark:text-gray-300">
+                I dont't have an account
+              </span>
+              <Link href="auth/signup">Signup</Link>
+            </div>
           </form>
         </div>
       </div>
