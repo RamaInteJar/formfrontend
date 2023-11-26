@@ -14,5 +14,5 @@ export default function Home() {
       redirect('/auth');
     }
   }, [accessToken]);
-  return accessToken ? <FacultyForm /> : <LoginPage />;
+  return accessToken ? redirect('/faculty') : <LoginPage />;
 }

@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
-import Cookies from 'js-cookie';
-import { baseUrl } from '@/config/apiConfig';
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
+import Cookies from "js-cookie";
+import { baseUrl } from "@/config/apiConfig";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: number;
@@ -25,13 +26,13 @@ interface AuthContextType {
   refreshToken: string | null;
   user: User | null;
   register: (
-    first_name:string,
-    last_name:string,
-    email:string,
-    username:string,
-    phone:string,
-    password:string,
-    confirmpassword:string
+    first_name: string,
+    last_name: string,
+    email: string,
+    username: string,
+    phone: string,
+    password: string,
+    confirmpassword: string
   ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -45,10 +46,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const accessToken = Cookies.get('accessToken');
-    const refreshToken = Cookies.get('refreshToken');
+    const accessToken = Cookies.get("accessToken");
+    const refreshToken = Cookies.get("refreshToken");
     if (accessToken && refreshToken) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
@@ -66,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     try {
       const response = await axios.post<regiterType>(
-        `${baseUrl}` + '/accounts/register',
+        `${baseUrl}` + "/accounts/register",
         {
           first_name,
           last_name,
@@ -78,12 +80,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       );
       if (response.status == 201) {
-        console.log('User registered successfull');
+        console.log("User registered successfull");
       }
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Registration failed:", error);
       if (error.response) {
-        console.error('Server response:', error.response.data);
+        console.error("Server response:", error.response.data);
       }
     }
   };
@@ -93,35 +95,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res = await axios.post<{
         access: string;
         refresh: string;
-      }>(`${baseUrl}` + '/accounts/token', {
+      }>(`${baseUrl}` + "/accounts/token", {
         email,
         password,
       });
       setAccessToken(res.data.access);
       setRefreshToken(res.data.refresh);
-      Cookies.set('accessToken', res.data.access);
-      Cookies.set('refreshToken', res.data.refresh);
+      Cookies.set("accessToken", res.data.access);
+      Cookies.set("refreshToken", res.data.refresh);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
-  };
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    router.push("/auth");
+  }, [router]);
+
+  const isTokenExpired = useCallback(() => {
+    if (!accessToken) {
+      return true;
+    }
+    const tokenParts = accessToken.split(".");
+    if (tokenParts.length !== 3) {
+      return true;
+    }
+    const encodedPayload = tokenParts[1];
+    const rawPayload = atob(encodedPayload);
+    const payload = JSON.parse(rawPayload);
+    const expirationTime = payload.exp;
+    const now = Math.floor(Date.now() / 1000);
+    return now >= expirationTime;
+  }, [accessToken]);
 
   useEffect(() => {
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
-        if (accessToken) {
+        if (accessToken && !isTokenExpired()) {
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
         return config;
       },
-      (error: AxiosError) => {
+      async (error: AxiosError) => {
+        const originalRequest = error.config;
+        if (
+          error.response?.status === 401 &&
+          !(originalRequest as any)._retry &&
+          refreshToken
+        ) {
+          (originalRequest as any)._retry = true;
+          try {
+            const refershResponse = await axios.post<{ access_token: string }>(
+              `${baseUrl}` + "/accounts/refresh",
+              {
+                refresh_token: refreshToken,
+              }
+            );
+            setAccessToken(refershResponse.data.access_token);
+            if (originalRequest) {
+              originalRequest.headers[
+                "Authorization"
+              ] = `Bearer ${refershResponse.data.access_token}`;
+              return axios(originalRequest);
+            }
+          } catch (refreshError) {
+            console.error("Token refersh failed", refreshError);
+            logout();
+            return Promise.reject(error);
+          }
+        }
         return Promise.reject(error);
       }
     );
@@ -140,18 +186,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           (originalRequest as any)._retry = true;
           try {
             const refershResponse = await axios.post<{ access_token: string }>(
-              `${baseUrl}` + '/accounts/refresh',
+              `${baseUrl}` + "/accounts/refresh",
               {
                 refresh_token: refreshToken,
               }
             );
             setAccessToken(refershResponse.data.access_token);
             if (originalRequest) {
-              originalRequest.headers.Authorization = `Bearer ${refershResponse.data.access_token}`;
+              originalRequest.headers['Authorization'] = `Bearer ${refershResponse.data.access_token}`;
               return axios(originalRequest);
             }
           } catch (refreshError) {
-            console.error('Token refersh failed', refreshError);
+            console.error("Token refersh failed", refreshError);
             logout();
             return Promise.reject(error);
           }
@@ -164,7 +210,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [accessToken, refreshToken]);
+  }, [accessToken, refreshToken, logout]);
 
   return (
     <AuthContext.Provider
@@ -178,7 +224,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
