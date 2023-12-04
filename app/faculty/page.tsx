@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React, { SetStateAction } from 'react';
 import {
   Table,
   TableHeader,
@@ -16,59 +16,83 @@ import {
   Chip,
   Pagination,
   User,
-} from "@nextui-org/react";
-import { Input } from "@nextui-org/input";
-import { columns, statusOptions } from "@/config/data";
-import { capitalize } from "@/utils/utils";
+} from '@nextui-org/react';
+import { Input } from '@nextui-org/input';
+import { columns, statusOptions } from '@/config/data';
+import { capitalize } from '@/utils/utils';
 import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-} from "@heroicons/react/24/outline";
-import { fetchFacultyForms } from "@/utils/apiCalls";
-import { useAuth } from "@/providers/authProvider";
-import { useRouter } from "next/navigation";
+} from '@heroicons/react/24/outline';
+import { fetchFacultyForms } from '@/utils/apiCalls';
+import { useAuth } from '@/providers/authProvider';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  active: 'success',
+  paused: 'danger',
+  vacation: 'warning',
 };
 
+type SortDescriptionType = {
+  column: 'users_ct' | 'status';
+  direction: 'ascending' | 'descending';
+};
+
+type FromStatustype = 'active' | 'paused' | 'vacation';
+
+type FormType = {
+  faculty_id: string;
+  users_ct: string;
+  duty: string;
+  reason: string;
+  sub_needed: Boolean;
+  times: string;
+  after_school: Boolean;
+  full_day: Boolean;
+  status: Boolean;
+  actions: string;
+};
+
+type FormKey = keyof FormType;
+
 const INITIAL_VISIBLE_COLUMNS = [
-  "faculty_id",
-  "formss_ct",
-  "duty",
-  "reason",
-  "sub_needed",
-  "times",
-  "after_school",
+  'faculty_id',
+  'users_ct',
+  'duty',
+  'reason',
+  'sub_needed',
+  'times',
+  'after_school',
   'full_day',
-  "status",
-  "actions",
+  'status',
+  'actions',
 ];
 
 export default function FacultyPage() {
-  const [filterValue, setFilterValue] = React.useState("");
+  const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [statusFilter, setStatusFilter] = React.useState('all');
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "users_ct",
-    direction: "ascending",
-  });
+  const [sortDescriptor, setSortDescriptor] =
+    React.useState<SortDescriptionType>({
+      column: 'users_ct',
+      direction: 'ascending',
+    });
   const [page, setPage] = React.useState(1);
-  const  [forms, setForms] = React.useState([])
+  const [forms, setForms] = React.useState<FormType[]>([]);
   const router = useRouter();
 
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    if (visibleColumns === "all") return columns;
+    if (visibleColumns === 'all') return columns;
 
     return columns.filter((column) =>
       Array.from(visibleColumns).includes(column.uid)
@@ -84,11 +108,11 @@ export default function FacultyPage() {
       );
     }
     if (
-      statusFilter !== "all" &&
+      statusFilter !== 'all' &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredforms = filteredforms.filter((forms) =>
-        Array.from(statusFilter).includes(forms.status)
+        Array.from(statusFilter).includes(forms.users_ct)
       );
     }
 
@@ -106,13 +130,21 @@ export default function FacultyPage() {
 
   const { accessToken } = useAuth();
 
-  React.useEffect(() => {
-    const  fetchData = async () => {
-      const res  =  await fetchFacultyForms(accessToken)
-      setForms(res)
-    }
-    fetchData()
-  }, [accessToken])
+  React.useLayoutEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (accessToken) {
+          const data = await fetchFacultyForms(accessToken);
+          setForms(data);
+        }
+        return null;
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [accessToken]);
 
   const sortedItems = React.useMemo(() => {
     return [...items].sort((a, b) => {
@@ -120,65 +152,105 @@ export default function FacultyPage() {
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((forms, columnKey) => {
-    const cellValue = forms[columnKey];
+  const renderCell = React.useCallback(
+    (forms: FormType, columnKey: FormKey) => {
+      const cellValue = forms[columnKey];
 
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-            avatarProps={{ radius: "lg", src: forms?.avatar }}
-            description={forms.email}
-            name={cellValue}
-          >
-            {forms.email}
-          </User>
-        );
-      case "role":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">
-              {forms.team}
-            </p>
-          </div>
-        );
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[forms.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <EllipsisVerticalIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+      switch (columnKey) {
+        case 'users_ct':
+          return (
+            <User
+              // avatarProps={{ radius: 'lg', src: forms?.avatar }}
+              // description={forms.email}
+              name={String(cellValue)}
+            >
+              {forms.users_ct}
+            </User>
+          );
+        // case 'role':
+        //   return (
+        //     <div className="flex flex-col">
+        //       <p className="text-bold text-small capitalize">{cellValue}</p>
+        //       <p className="text-bold text-tiny capitalize text-default-400">
+        //         {forms.team}
+        //       </p>
+        //     </div>
+        //   );
+        case 'status':
+          return (
+            <Chip
+              className="capitalize"
+              color={cellValue === true ? 'success' : 'primary'}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue === true ? 'Appproved' : 'Not Approved'}
+            </Chip>
+          );
+        case 'sub_needed':
+          return (
+            <Chip
+              className="capitalize"
+              color={cellValue === true ? 'success' : 'primary'}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue === true ? 'Yes' : 'No'}
+            </Chip>
+          );
+        case 'after_school':
+          return (
+            <Chip
+              className="capitalize"
+              color={cellValue === true ? 'success' : 'primary'}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue === true ? 'Yes' : 'No'}
+            </Chip>
+          );
+        case 'full_day':
+          return (
+            <Chip
+              className="capitalize"
+              color={cellValue === true ? 'success' : 'primary'}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue === true ? 'Yes' : 'No'}
+            </Chip>
+          );
+        case 'actions':
+          return (
+            <div className="relative flex justify-end items-center gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <EllipsisVerticalIcon className="text-default-300" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem>
+                    <Link href={`/faculty/${String(forms.faculty_id)}`}>
+                      View
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem>Edit</DropdownItem>
+                  <DropdownItem>Delete</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -197,17 +269,17 @@ export default function FacultyPage() {
     setPage(1);
   }, []);
 
-  const onSearchChange = React.useCallback((value) => {
+  const onSearchChange = React.useCallback((value: SetStateAction<string>) => {
     if (value) {
       setFilterValue(value);
       setPage(1);
     } else {
-      setFilterValue("");
+      setFilterValue('');
     }
   }, []);
 
   const onClear = React.useCallback(() => {
-    setFilterValue("");
+    setFilterValue('');
     setPage(1);
   }, []);
 
@@ -273,7 +345,12 @@ export default function FacultyPage() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />} type="button" onClick={()=>router.push('faculty/addnew')}>
+            <Button
+              color="primary"
+              endContent={<PlusIcon />}
+              type="button"
+              onClick={() => router.push('faculty/addnew')}
+            >
               Add New
             </Button>
           </div>
@@ -310,8 +387,8 @@ export default function FacultyPage() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
+          {selectedKeys === 'all'
+            ? 'All items selected'
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
@@ -352,7 +429,7 @@ export default function FacultyPage() {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px]",
+        wrapper: 'max-h-[382px]',
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
@@ -366,14 +443,14 @@ export default function FacultyPage() {
         {(column) => (
           <TableColumn
             key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
+            align={column.uid === 'actions' ? 'center' : 'start'}
             allowsSorting={column.sortable}
           >
             {column.name}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No formss found"} items={sortedItems}>
+      <TableBody emptyContent={'No formss found'} items={sortedItems}>
         {(item) => (
           <TableRow key={item.faculty_id}>
             {(columnKey) => (
