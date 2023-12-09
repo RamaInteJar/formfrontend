@@ -1,3 +1,4 @@
+import ApproveFormComponent from '@/components/ApproveFormComponent';
 import { fetchFacultyForm, ApproveForm } from '@/utils/apiCalls';
 import { Textarea } from '@nextui-org/input';
 import { Button } from '@nextui-org/react';
@@ -10,16 +11,7 @@ const FacultyDetails = async ({
 }) => {
   const form = await fetchFacultyForm(params.faculty_id);
 
-  const handleApprove = async (formData: FormData) => {
-    'use server';
-    const reason = formData.get('reason');
-    const res = await ApproveForm(form.faculty_id, reason);
-    if (res) {
-      console.log(res.error);
-      return;
-    }
-    console.log(res, 'success');
-  };
+  
 
   return (
     <div>
@@ -53,26 +45,8 @@ const FacultyDetails = async ({
           </div>
         </div>
       </div>
-      <form action={handleApprove} method="POST">
-        <Textarea
-          variant="bordered"
-          label="Reason"
-          labelPlacement="outside"
-          placeholder="Reason"
-          className="max-w-[500px]"
-          name="reason"
-        />
-        <div>
-          <Button
-            className="mt-5"
-            color="primary"
-            variant="bordered"
-            type="submit"
-          >
-            Approve
-          </Button>
-        </div>
-      </form>
+      <ApproveFormComponent faculty_id={form.faculty_id}/>
+      
     </div>
   );
 };

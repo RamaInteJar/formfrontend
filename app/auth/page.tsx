@@ -1,23 +1,24 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button, Checkbox, Select, SelectItem } from '@nextui-org/react';
-import { useAuth } from '@/providers/authProvider';
-import { useRouter } from 'next/navigation';
-import { Link } from '@nextui-org/link';
-import { Input } from '@nextui-org/input';
+import React, { useState } from "react";
+import { Button, Checkbox, Select, SelectItem } from "@nextui-org/react";
+import { useAuth } from "@/providers/authProvider";
+import { useRouter } from "next/navigation";
+import { Link } from "@nextui-org/link";
+import { Input } from "@nextui-org/input";
 
 const LoginPage = () => {
+  const [isSubmitting, setIsSubmitting] = useState<Boolean>(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
-    const val = type === 'checkbox' ? checked : value;
+    const val = type === "checkbox" ? checked : value;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: val,
@@ -26,9 +27,15 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    await login(formData.email, formData.password);
+    try {
+      setIsSubmitting(true);
+      await login(formData.email, formData.password);
+    } catch (err) {
+      console.log(err);
+    }
+    setIsSubmitting(false);
 
-    router.push('/');
+    router.replace("/");
   };
 
   return (
@@ -77,17 +84,28 @@ const LoginPage = () => {
                 Forgot password?
               </a>
             </div>
-            <Button
-              type="submit"
-              color="primary"
-              variant="bordered"
-              className="w-full"
-            >
-              Sign in
-            </Button>
+            {!isSubmitting ? (
+              <Button
+                type="submit"
+                color="primary"
+                variant="bordered"
+                className="w-full"
+              >
+                Sign in
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                variant="bordered"
+                className="w-full"
+                isLoading
+              >
+                Loading...
+              </Button>
+            )}
             <div className="flex flex-row gap-2 items-center justify-center">
               <span className="text-gray-500 dark:text-gray-300">
-                I dont't have an account
+                I dont have an account
               </span>
               <Link href="auth/signup">Signup</Link>
             </div>
