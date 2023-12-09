@@ -14,6 +14,10 @@ interface formDataType {
   duty: string;
 }
 
+interface facultResponse {
+  reason: string;
+}
+
 const accessToken = Cookies.get('accessToken');
 
 export const submitForm = async (
@@ -68,13 +72,17 @@ export const fetchFacultyForm = async (faculty_id: string) => {
   }
 };
 
-export const ApproveForm = async (form_id: string, formData: string) => {
-  console.log('faculty id',form_id, 'form data',formData);
+export const ApproveForm = async (
+  form_id: string,
+  formData: string,
+  accessToken: string | null
+) => {
+  console.log('faculty id', form_id, 'form data', formData);
   try {
     const query = `?faculty_id=${form_id}`;
     const response = await axisoInstance.post(
       `/faculty/form/response${query}`,
-      formData,
+      { reason: formData },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

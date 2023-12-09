@@ -1,29 +1,42 @@
-import { fetchFacultyForm, ApproveForm } from '@/utils/apiCalls';
-import { Textarea } from '@nextui-org/input';
-import { Button } from '@nextui-org/react';
+import { fetchFacultyForm } from '@/utils/apiCalls';
 import React from 'react';
+import ApproveFromComponent from '@/components/ApproveFromComponent';
+
+type FacultyType = {
+  faculty_id: string;
+  users_ct: string;
+  sub_needed: boolean;
+  full_day: boolean;
+  times: string;
+  after_school: boolean;
+  duty: string;
+  reason: string;
+  status: boolean;
+  create_at: Date;
+  update_at: Date;
+};
 
 const FacultyDetails = async ({
   params,
 }: {
   params: { faculty_id: string };
 }) => {
-  const form = await fetchFacultyForm(params.faculty_id);
+  // const [faculty, setFaculty] = React.useState<FacultyType | null>(null);
 
-  const handleApprove = async (formData: FormData) => {
-    'use server';
-    const reason = formData.get('reason');
-    const res = await ApproveForm(form.faculty_id, reason);
-    if (res) {
-      console.log(res.error);
-      return;
-    }
-    console.log(res, 'success');
-  };
+  // React.useEffect(() => {
+  //   const fetchFaculty = async () => {
+  //     const res = await fetchFacultyForm(params.faculty_id);
+
+  //     setFaculty(res.faculty);
+  //   };
+  //   fetchFaculty();
+  // }, []);
+
+  const faculty = await fetchFacultyForm(params.faculty_id);
 
   return (
     <div>
-      <h1>Application Details {form.faculty_id}</h1>
+      <h1>Application Details {faculty.faculty_id}</h1>
       <div className="mb-10 pt-6">
         <div className="mb-10">
           <h2 className="text-2xl font-semibold">Personal Details</h2>
@@ -39,40 +52,21 @@ const FacultyDetails = async ({
               <p className="text-lg font-semibold">Status</p>
             </div>
             <div className="flex flex-col space-y-2">
-              <p className="text-lg">{form.users_ct}</p>
-              <p className="text-lg">{form.duty}</p>
-              <p className="text-lg">{form.reason}</p>
-              <p className="text-lg">{form.times}</p>
-              <p className="text-lg">{form.sub_needed ? 'Yes' : 'No'}</p>
-              <p className="text-lg">{form.full_day ? 'Yes' : 'No'}</p>
-              <p className="text-lg">{form.after_school ? 'Yes' : 'No'}</p>
+              <p className="text-lg">{faculty.users_ct}</p>
+              <p className="text-lg">{faculty.duty}</p>
+              <p className="text-lg">{faculty.reason}</p>
+              <p className="text-lg">{faculty.times}</p>
+              <p className="text-lg">{faculty.sub_needed ? 'Yes' : 'No'}</p>
+              <p className="text-lg">{faculty.full_day ? 'Yes' : 'No'}</p>
+              <p className="text-lg">{faculty.after_school ? 'Yes' : 'No'}</p>
               <p className="text-lg">
-                {form.status ? 'Approved' : 'Not Approved'}
+                {faculty.status ? 'Approved' : 'Not Approved'}
               </p>
             </div>
           </div>
         </div>
+        <ApproveFromComponent faculty_id={faculty.faculty_id} />
       </div>
-      <form action={handleApprove} method="POST">
-        <Textarea
-          variant="bordered"
-          label="Reason"
-          labelPlacement="outside"
-          placeholder="Reason"
-          className="max-w-[500px]"
-          name="reason"
-        />
-        <div>
-          <Button
-            className="mt-5"
-            color="primary"
-            variant="bordered"
-            type="submit"
-          >
-            Approve
-          </Button>
-        </div>
-      </form>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useCallback,
@@ -117,13 +116,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const logout = useCallback(() => {
+  const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
     router.push('/auth');
-  }, [router]);
+  };
 
   const isTokenExpired = useCallback(() => {
     if (!accessToken) {

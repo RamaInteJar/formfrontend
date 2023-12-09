@@ -1,35 +1,35 @@
-"use client";
-import { useAuth } from "@/providers/authProvider";
-import { submitForm } from "@/utils/apiCalls";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/react";
-import { Select,SelectSection, SelectItem } from "@nextui-org/react";
-import { Checkbox } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+'use client';
+import { useAuth } from '@/providers/authProvider';
+import { submitForm } from '@/utils/apiCalls';
+import { Input } from '@nextui-org/input';
+import { Button } from '@nextui-org/react';
+import { Select, SelectSection, SelectItem } from '@nextui-org/react';
+import { Checkbox } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const timeData = [
   {
     id: 1,
-    times: "AM",
+    times: 'AM',
   },
   {
     id: 2,
-    times: "PM",
+    times: 'PM',
   },
 ];
 const reasonData = [
   {
     id: 1,
-    reason: "Personal",
+    reason: 'Personal',
   },
   {
     id: 2,
-    reason: "Professional",
+    reason: 'Professional',
   },
   {
     id: 3,
-    reason: "Others",
+    reason: 'Others',
   },
 ];
 
@@ -37,29 +37,27 @@ const FacultyForm = () => {
   const [formData, setFormData] = useState({
     sub_needed: false,
     full_day: false,
-    times: "",
+    times: '',
     after_school: false,
-    duty: "",
-    reason: "",
+    duty: '',
+    reason: '',
   });
   const { accessToken } = useAuth();
 
-  const [timeValue, setTimeValue] = useState("");
-  const [reasonValue, setReasonValue] = useState("");
+  const [timeValue, setTimeValue] = useState('');
+  const [reasonValue, setReasonValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const router = useRouter();
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
-    const val = type === "checkbox" ? checked : value;
+    const val = type === 'checkbox' ? checked : value;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: val,
     }));
   };
-
-  console.log(formData.full_day);
 
   const handleTimeChange = (e: any) => {
     setTimeValue(e.target.value);
@@ -81,11 +79,11 @@ const FacultyForm = () => {
     try {
       await submitForm(updatedFormData, accessToken);
       setIsSubmitted(true);
-      router.push("/faculty");
+      router.push('/faculty');
 
-      console.log("Form submitted successfully:", updatedFormData);
+      console.log('Form submitted successfully:', updatedFormData);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error('Error submitting form:', error);
     }
   };
 
@@ -124,7 +122,7 @@ const FacultyForm = () => {
           <div className="mb-4">
             <label>After School Duty:</label>
             <Checkbox
-              name="afterSchoolDuty"
+              name="after_school"
               checked={formData.after_school}
               onChange={handleChange}
             />
@@ -162,7 +160,12 @@ const FacultyForm = () => {
           </div>
           <div className="mb-4">
             {isSubmitted ? (
-              <Button color="primary" isLoading variant="bordered" className="w-full">
+              <Button
+                color="primary"
+                isLoading
+                variant="bordered"
+                className="w-full"
+              >
                 Loading
               </Button>
             ) : (
