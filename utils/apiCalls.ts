@@ -36,9 +36,13 @@ export const submitForm = async (
   }
 };
 
-export const fetchFacultyForms = async (authToken: string | null) => {
+export const fetchFacultyForms = async (
+  status: string,
+  authToken: string | null
+) => {
   try {
-    const response = await axisoInstance.get(`/faculty/forms`, {
+    const query = `?status=${status}`;
+    const response = await axisoInstance.get(`/faculty/forms${query}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
         'Content-Type': 'application/json',
@@ -90,5 +94,24 @@ export const ApproveForm = async (
     return response.data;
   } catch (error: any) {
     console.error('Error Approved failed:', error.message);
+  }
+};
+
+export const fetchFacultyFormApproved = async (
+  faculty_id: string,
+  accessToken: string | null
+) => {
+  try {
+    const query = `?faculty_id=${faculty_id}`;
+    const response = await axisoInstance.get(`/faculty/form/approved${query}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching faculty forms:', error);
   }
 };

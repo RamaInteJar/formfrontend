@@ -1,29 +1,37 @@
 'use client';
-import { useAuth } from "@/providers/authProvider";
-import { ApproveForm } from "@/utils/apiCalls";
-import { Textarea } from "@nextui-org/input";
-import { Button } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useAuth } from '@/providers/authProvider';
+import { ApproveForm } from '@/utils/apiCalls';
+import { Textarea } from '@nextui-org/input';
+import { Button } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 
 interface ApproveFromProps {
   faculty_id: string;
 }
 
 const ApproveFormComponent: React.FC<ApproveFromProps> = ({ faculty_id }) => {
-  const [formData, setFormData] = useState("");
+  const [formData, setFormData] = useState('');
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  console.log('faculty id', faculty_id);
 
   const { accessToken } = useAuth();
   const router = useRouter();
 
   const handleApprove = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (formData === "") {
-      console.warn("Please fill the reason");
+    if (formData === '') {
+      console.warn('Please fill the reason');
       return;
     }
-    const res = await ApproveForm(faculty_id, formData, accessToken);
-    router.push("/");
+    try {
+      setIsLoading(!isLoading);
+      const res = await ApproveForm(faculty_id, formData, accessToken);
+      router.push('/');
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(isLoading);
   };
   return (
     <div>
@@ -39,14 +47,24 @@ const ApproveFormComponent: React.FC<ApproveFromProps> = ({ faculty_id }) => {
           onValueChange={setFormData}
         />
         <div>
-          <Button
-            className="mt-5"
-            color="primary"
-            variant="bordered"
-            type="submit"
-          >
-            Approve
-          </Button>
+          {!isLoading ? (
+            <Button
+              className="mt-5"
+              color="primary"
+              variant="bordered"
+              type="submit"
+            >
+              Approve
+            </Button>
+          ) : (
+            <Button
+              color="primary"
+              variant="bordered"
+              isLoading
+            >
+              Loading...
+            </Button>
+          )}
         </div>
       </form>
     </div>
