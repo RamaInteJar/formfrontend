@@ -1,8 +1,4 @@
-import { baseUrl } from '@/config/apiConfig';
-import axios from 'axios';
 import { axisoInstance } from './axiosInstance';
-import { use } from 'react';
-import { useAuth } from '@/providers/authProvider';
 import Cookies from 'js-cookie';
 
 interface formDataType {
@@ -77,12 +73,12 @@ export const ApproveForm = async (
   formData: string,
   accessToken: string | null
 ) => {
-  console.log('faculty id', form_id, 'form data', formData);
   try {
     const query = `?faculty_id=${form_id}`;
     const response = await axisoInstance.post(
       `/faculty/form/response${query}`,
       { reason: formData },
+
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
