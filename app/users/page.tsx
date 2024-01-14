@@ -24,7 +24,9 @@ import {
   TableHeader,
   TableRow,
   User,
+  useDisclosure,
 } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const INITIAL_VISIBLE_COLUMNS = [
@@ -81,21 +83,6 @@ type UsersType = {
 
 type UserKey = keyof UsersType;
 
-// "user_id": "b06b1da3-0af1-41cf-9c32-04dd297f89b5",
-// "username": "Rama ",
-// "email": "atl2015@gmail.com",
-// "first_name": "Rhawai",
-// "last_name": "Hawai",
-// "last_login": "2023-11-04T09:35:31.600589Z",
-// "role": null,
-// "start_date": "2023-11-04T09:34:01.234855Z",
-// "phone": "",
-// "is_staff": true,
-// "is_active": true,
-// "is_superuser": true,
-// "groups": [],
-// "user_permissions": []
-
 const UserPage = () => {
   const { accessToken } = useAuth();
   const [userData, setUserData] = useState<UsersType[]>([]);
@@ -106,12 +93,12 @@ const UserPage = () => {
     }
     return null;
   };
+  const router = useRouter();
 
   useEffect(() => {
     fetchAllUsers();
   }, [accessToken]);
 
-  console.log('all users', userData);
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -156,6 +143,7 @@ const UserPage = () => {
   }, [userData, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -231,9 +219,12 @@ const UserPage = () => {
                     <EllipsisVerticalIcon className="w-5 h-5" />
                   </Button>
                 </DropdownTrigger>
-                <DropdownMenu>
+                <DropdownMenu onAction={(key) => router.push(String(key))}>
                   <DropdownItem>View</DropdownItem>
-                  <DropdownItem>Edit</DropdownItem>
+
+                  <DropdownItem key={`/users/${String(userData.user_id)}`}>
+                    Edit
+                  </DropdownItem>
                   <DropdownItem>Delete</DropdownItem>
                 </DropdownMenu>
               </Dropdown>

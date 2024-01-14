@@ -116,7 +116,6 @@ export const fetchFacultyFormApproved = async (
   }
 };
 
-
 export const getAllUsers = async (accessToken: string | null) => {
   try {
     const response = await axisoInstance.get(`/accounts/users`, {
@@ -129,5 +128,20 @@ export const getAllUsers = async (accessToken: string | null) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching faculty forms:', error);
+  }
+};
+export const getUser = async (accessToken: string | null, user_id: string) => {
+  try {
+    const query = `?user_id=${user_id}`;
+    const response = await axisoInstance.get(`/accounts/user${query}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user details:', error);
   }
 };
