@@ -115,3 +115,19 @@ export const fetchFacultyFormApproved = async (
     console.error('Error fetching faculty forms:', error);
   }
 };
+
+
+export const getAllUsers = async (accessToken: string | null) => {
+  try {
+    const response = await axisoInstance.get(`/accounts/users`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching faculty forms:', error);
+  }
+};

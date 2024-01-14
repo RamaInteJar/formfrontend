@@ -12,10 +12,10 @@ export const siteConfig = {
       label: "Faculty",
       href: "/faculty",
     },
-    // {
-    //   label: "Pricing",
-    //   href: "/pricing",
-    // },
+    {
+      label: "Users",
+      href: "/users",
+    },
     // {
     //   label: "Blog",
     //   href: "/blog",
