@@ -12,8 +12,8 @@ import { useRouter } from 'next/navigation';
 import { axisoInstance } from '@/utils/axiosInstance';
 
 interface User {
-  id: number;
   username: string;
+  role?: string;
 }
 
 type regiterType = {
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -59,6 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (accessToken && refreshToken) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
+      const userloged = getLoggedInuser(accessToken);
+      setUser(userloged);
     }
   }, []);
 
@@ -99,21 +101,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const login = async (email: string, password: string) => {
+    const res = await axisoInstance.post<{
+      access: string;
+      refresh: string;
+    }>('/accounts/token', {
+      email,
+      password,
+    });
+    setAccessToken(res.data.access);
+    setRefreshToken(res.data.refresh);
+    Cookies.set('accessToken', res.data.access);
+    Cookies.set('refreshToken', res.data.refresh);
+  };
+
+  const getLoggedInuser = (token: string) => {
     try {
-      const res = await axisoInstance.post<{
-        access: string;
-        refresh: string;
-      }>('/accounts/token', {
-        email,
-        password,
-      });
-      setAccessToken(res.data.access);
-      setRefreshToken(res.data.refresh);
-      Cookies.set('accessToken', res.data.access);
-      Cookies.set('refreshToken', res.data.refresh);
-    } catch (err) {
-      console.log(err);
+      const tokenParts = token.split('.');
+      if (tokenParts.length === 3) {
+        const encodedPayload = tokenParts[1];
+        const rawPayload = atob(encodedPayload);
+        const payload = JSON.parse(rawPayload);
+        const data = {
+          username: payload.username,
+          role: payload?.role,
+        };
+        return data;
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error);
     }
+    return null;
   };
 
   const logout = () => {

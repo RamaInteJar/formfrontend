@@ -1,6 +1,5 @@
-import FacultyForm from '@/components/FacultyForm';
-import FacultyPage from './faculty/page';
+import DashboardPage from './dashboard/page';
 
 export default function Home() {
-  return <FacultyPage />;
+  return <DashboardPage />;
 }

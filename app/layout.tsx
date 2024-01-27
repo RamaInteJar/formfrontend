@@ -9,6 +9,8 @@ import { Link } from '@nextui-org/link';
 import clsx from 'clsx';
 import { AuthProvider, useAuth } from '@/providers/authProvider';
 import { redirect } from 'next/navigation';
+import SideBar from '@/components/SideBar';
+import { Toaster } from 'react-hot-toast';
 // export const metadata: Metadata = {
 //   title: {
 //     default: siteConfig.name,
@@ -42,13 +44,19 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
           <AuthProvider>
-            <div className="relative flex flex-col h-screen">
-              <Navbar />
-              <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
-                {children}
-              </main>
+            <div className="flex">
+              <div className="hidden lg:block navbar-menu relative z-50">
+                <SideBar />
+              </div>
+              <div className="flex-1">
+                <div className="relative lg:ml-56 ml-0 flex flex-col h-screen">
+                  <Navbar />
+                  <main className=" pt-16 px-6 flex-grow">{children}</main>
+                </div>
+              </div>
             </div>
           </AuthProvider>
+          <Toaster position="top-right" reverseOrder={false} />
         </Providers>
       </body>
     </html>

@@ -6,6 +6,7 @@ import { useAuth } from "@/providers/authProvider";
 import { useRouter } from "next/navigation";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState<Boolean>(false);
@@ -30,8 +31,9 @@ const LoginPage = () => {
     try {
       setIsSubmitting(true);
       await login(formData.email, formData.password);
-    } catch (err) {
-      console.log(err);
+      toast.success("Login Successful");
+    } catch (err: any) {
+      toast.error(err.response.data.detail)
     }
     setIsSubmitting(false);
 
