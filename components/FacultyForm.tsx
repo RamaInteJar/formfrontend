@@ -7,6 +7,7 @@ import { Select, SelectSection, SelectItem } from '@nextui-org/react';
 import { Checkbox } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const timeData = [
   {
@@ -33,19 +34,28 @@ const reasonData = [
   },
 ];
 
+type formDataType = {
+  sub_needed: boolean;
+  full_day: boolean;
+  times: string | null;
+  after_school: boolean;
+  duty: string | null;
+  reason: string | null;
+};
+
 const FacultyForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<formDataType>({
     sub_needed: false,
     full_day: false,
-    times: '',
+    times: null,
     after_school: false,
-    duty: '',
-    reason: '',
+    duty: null,
+    reason: null,
   });
   const { accessToken } = useAuth();
 
-  const [timeValue, setTimeValue] = useState('');
-  const [reasonValue, setReasonValue] = useState('');
+  const [timeValue, setTimeValue] = useState(null);
+  const [reasonValue, setReasonValue] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const router = useRouter();
@@ -70,20 +80,41 @@ const FacultyForm = () => {
     e.preventDefault();
 
     // Add time and reason values manually to formData before sending the form data
-    const updatedFormData = {
+    const updatedFormData: formDataType | any = {
       ...formData,
       times: timeValue,
       reason: reasonValue,
     };
 
-    try {
-      await submitForm(updatedFormData, accessToken);
-      setIsSubmitted(true);
-      router.push('/faculty');
+    if (
+      updatedFormData.duty === null &&
+      updatedFormData.reason === null &&
+      updatedFormData.times === null
+    ) {
+      toast.error('Please fill in all fields');
+      return;
+    }
 
-      console.log('Form submitted successfully:', updatedFormData);
-    } catch (error) {
-      console.error('Error submitting form:', error);
+    try {
+      let response = await submitForm(updatedFormData, accessToken);
+      setIsSubmitted(true);
+      // router.push('/faculty');
+
+      if (response) {
+        toast.success(response.message);
+        setIsSubmitted(false);
+        setFormData({
+          full_day: false,
+          sub_needed: false,
+          after_school: false,
+          duty: null,
+          times: null,
+          reason: null,
+        });
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.detail);
+      setIsSubmitted(false);
     }
   };
 
@@ -96,7 +127,7 @@ const FacultyForm = () => {
         >
           <Input
             name="duty"
-            value={formData.duty}
+            value={formData.duty || ''}
             type="text"
             label="Duty"
             onChange={handleChange}
@@ -131,7 +162,7 @@ const FacultyForm = () => {
           {!formData.full_day && (
             <div className="mb-4">
               <Select
-                value={timeValue}
+                value={timeValue || ''}
                 name="times"
                 onChange={handleTimeChange}
                 label="Time"
@@ -146,7 +177,7 @@ const FacultyForm = () => {
           )}
           <div className="mb-4">
             <Select
-              value={reasonValue}
+              value={reasonValue || ''}
               name="reason"
               onChange={handleReasonChange}
               label="Reason for Request:"
