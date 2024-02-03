@@ -1,6 +1,6 @@
 'use client';
 import { useAuth } from '@/providers/authProvider';
-import { submitForm } from '@/utils/apiCalls';
+import { sendEmailNotification, submitForm } from '@/utils/apiCalls';
 import { Input } from '@nextui-org/input';
 import { Button } from '@nextui-org/react';
 import { Select, SelectSection, SelectItem } from '@nextui-org/react';
@@ -111,10 +111,35 @@ const FacultyForm = () => {
           times: null,
           reason: null,
         });
+
+        let emailData = {
+          subject: `TimeOff application `,
+          message: formData.duty + ' ' + `${reasonValue}`,
+          recipients: [process.env.NEXT_PUBLIC_ADMIN_EMAIL!],
+        };
+
+        try {
+          const email_res = await sendEmailNotification(emailData);
+          if (email_res) {
+            toast.success(email_res.message);
+          }
+        } catch (error: any) {
+          toast.error(error.message);
+        }
       }
     } catch (error: any) {
-      toast.error(error.response.data.detail);
+      toast.error(error.response?.data.detail);
       setIsSubmitted(false);
+    } finally {
+      setIsSubmitted(false);
+      setFormData({
+        full_day: false,
+        sub_needed: false,
+        after_school: false,
+        duty: null,
+        times: null,
+        reason: null,
+      });
     }
   };
 

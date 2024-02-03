@@ -3,7 +3,6 @@ import { fetchFacultyForm } from '@/utils/apiCalls';
 
 import React from 'react';
 
-
 type FacultyType = {
   faculty_id: string;
   users_ct: string;
@@ -23,14 +22,11 @@ const FacultyDetails = async ({
 }: {
   params: { faculty_id: string };
 }) => {
-
-
   const form = await fetchFacultyForm(params.faculty_id);
-
 
   return (
     <div>
-      <h1>Application Details {form.faculty_id}</h1>
+      <h1>Application Details {form?.faculty_id}</h1>
       <div className="mb-10 pt-6">
         <div className="mb-10">
           <h2 className="text-2xl font-semibold">Personal Details</h2>
@@ -59,7 +55,7 @@ const FacultyDetails = async ({
             </div>
           </div>
         </div>
-        <ApproveFormComponent faculty_id={form.faculty_id}/>
+        <ApproveFormComponent faculty_id={form.faculty_id} email={form.email} />
       </div>
     </div>
   );

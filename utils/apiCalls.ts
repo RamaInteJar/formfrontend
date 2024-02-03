@@ -1,3 +1,4 @@
+import { IEmailData } from '@/types';
 import { axisoInstance } from './axiosInstance';
 import Cookies from 'js-cookie';
 
@@ -9,6 +10,8 @@ interface formDataType {
   after_school: boolean;
   duty: string;
 }
+
+
 
 interface facultResponse {
   reason: string;
@@ -71,24 +74,20 @@ export const ApproveForm = async (
   formData: string,
   accessToken: string | null
 ) => {
-  try {
-    const query = `?faculty_id=${form_id}`;
-    const response = await axisoInstance.post(
-      `/faculty/form/response${query}`,
-      { reason: formData },
+  const query = `?faculty_id=${form_id}`;
+  const response = await axisoInstance.post(
+    `/faculty/form/response${query}`,
+    { reason: formData },
 
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
-    return response.data;
-  } catch (error: any) {
-    console.error('Error Approved failed:', error.message);
-  }
+  return response.data;
 };
 
 export const fetchFacultyFormApproved = async (
@@ -138,4 +137,14 @@ export const getUser = async (accessToken: string | null, user_id: string) => {
   } catch (error) {
     console.error('Error fetching user details:', error);
   }
+};
+
+export const sendEmailNotification = async (emailData: IEmailData) => {
+  const response = await axisoInstance.post('/send-email', emailData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data;
 };

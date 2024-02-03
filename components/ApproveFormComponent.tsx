@@ -1,19 +1,24 @@
 'use client';
 import { useAuth } from '@/providers/authProvider';
-import { ApproveForm } from '@/utils/apiCalls';
+import { IEmailData } from '@/types';
+import { ApproveForm, sendEmailNotification } from '@/utils/apiCalls';
 import { Textarea } from '@nextui-org/input';
 import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface ApproveFromProps {
   faculty_id: string;
+  email: string;
 }
 
-const ApproveFormComponent: React.FC<ApproveFromProps> = ({ faculty_id }) => {
+const ApproveFormComponent: React.FC<ApproveFromProps> = ({
+  faculty_id,
+  email,
+}) => {
   const [formData, setFormData] = useState('');
   const [isLoading, setIsLoading] = useState<Boolean>(false);
-  console.log('faculty id', faculty_id);
 
   const { accessToken } = useAuth();
   const router = useRouter();
@@ -21,17 +26,41 @@ const ApproveFormComponent: React.FC<ApproveFromProps> = ({ faculty_id }) => {
   const handleApprove = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (formData === '') {
-      console.warn('Please fill the reason');
+      toast.error('Please enter a reason');
       return;
     }
     try {
       setIsLoading(!isLoading);
       const res = await ApproveForm(faculty_id, formData, accessToken);
-      router.push('/');
-    } catch (error) {
-      console.log(error);
+
+      if (res.status === 201) {
+        toast.success(res.message);
+
+        try {
+          let emailData: IEmailData = {
+            subject: 'Time off Approval',
+            message: formData,
+            recipients: [email],
+          };
+
+          console.log(emailData)
+
+          const sent_email = await sendEmailNotification(emailData);
+
+          console.log('Email message', sent_email);
+
+          if (sent_email.status === 200) {
+            toast.success(sent_email.message);
+          }
+        } catch (error) {
+          toast.error('Error sending email');
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data.Details);
+    } finally {
+      setIsLoading(isLoading);
     }
-    setIsLoading(isLoading);
   };
   return (
     <div>
@@ -57,11 +86,7 @@ const ApproveFormComponent: React.FC<ApproveFromProps> = ({ faculty_id }) => {
               Approve
             </Button>
           ) : (
-            <Button
-              color="primary"
-              variant="bordered"
-              isLoading
-            >
+            <Button color="primary" variant="bordered" isLoading>
               Loading...
             </Button>
           )}
