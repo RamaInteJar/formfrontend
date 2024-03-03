@@ -34,6 +34,12 @@ const reasonData = [
   },
 ];
 
+type emailDataType = {
+  subject: string;
+  message: string;
+  recipients: string[];
+};
+
 type formDataType = {
   sub_needed: boolean;
   full_day: boolean;
@@ -112,16 +118,17 @@ const FacultyForm = () => {
           reason: null,
         });
 
-        let emailData = {
+
+        let emailData: emailDataType = {
           subject: `TimeOff application `,
           message: formData.duty + ' ' + `${reasonValue}`,
-          recipients: [process.env.NEXT_PUBLIC_ADMIN_EMAIL!],
+          recipients: process.env.NEXT_PUBLIC_ADMIN_EMAIL!.split(','),
         };
-
         try {
           const email_res = await sendEmailNotification(emailData);
           if (email_res) {
             toast.success(email_res.message);
+            router.back();
           }
         } catch (error: any) {
           toast.error(error.message);

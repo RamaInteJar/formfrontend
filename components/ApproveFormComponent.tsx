@@ -43,14 +43,13 @@ const ApproveFormComponent: React.FC<ApproveFromProps> = ({
             recipients: [email],
           };
 
-          console.log(emailData)
-
           const sent_email = await sendEmailNotification(emailData);
 
-          console.log('Email message', sent_email);
+          
 
           if (sent_email.status === 200) {
             toast.success(sent_email.message);
+            router.back();
           }
         } catch (error) {
           toast.error('Error sending email');
