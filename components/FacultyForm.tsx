@@ -1,36 +1,20 @@
-'use client';
-import { useAuth } from '@/providers/authProvider';
-import { sendEmailNotification, submitForm } from '@/utils/apiCalls';
-import { Input } from '@nextui-org/input';
-import { Button } from '@nextui-org/react';
-import { Select, SelectSection, SelectItem } from '@nextui-org/react';
-import { Checkbox } from '@nextui-org/react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+"use client";
+import { useAuth } from "@/providers/authProvider";
+import { sendEmailNotification, submitForm } from "@/utils/apiCalls";
+import { Select, Checkbox, SelectItem, Button, Input } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { reasons } from "@/config/data";
 
 const timeData = [
   {
     id: 1,
-    times: 'AM',
+    times: "AM",
   },
   {
     id: 2,
-    times: 'PM',
-  },
-];
-const reasonData = [
-  {
-    id: 1,
-    reason: 'Personal',
-  },
-  {
-    id: 2,
-    reason: 'Professional',
-  },
-  {
-    id: 3,
-    reason: 'Others',
+    times: "PM",
   },
 ];
 
@@ -68,7 +52,7 @@ const FacultyForm = () => {
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
-    const val = type === 'checkbox' ? checked : value;
+    const val = type === "checkbox" ? checked : value;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: val,
@@ -97,7 +81,7 @@ const FacultyForm = () => {
       updatedFormData.reason === null &&
       updatedFormData.times === null
     ) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -108,21 +92,11 @@ const FacultyForm = () => {
 
       if (response) {
         toast.success(response.message);
-        setIsSubmitted(false);
-        setFormData({
-          full_day: false,
-          sub_needed: false,
-          after_school: false,
-          duty: null,
-          times: null,
-          reason: null,
-        });
-
 
         let emailData: emailDataType = {
           subject: `TimeOff application `,
-          message: formData.duty + ' ' + `${reasonValue}`,
-          recipients: process.env.NEXT_PUBLIC_ADMIN_EMAIL!.split(','),
+          message: formData.duty + " " + `${reasonValue}`,
+          recipients: process.env.NEXT_PUBLIC_ADMIN_EMAIL!.split(","),
         };
         try {
           const email_res = await sendEmailNotification(emailData);
@@ -159,10 +133,11 @@ const FacultyForm = () => {
         >
           <Input
             name="duty"
-            value={formData.duty || ''}
+            value={formData.duty || ""}
             type="text"
             label="Duty"
             onChange={handleChange}
+            size="sm"
           />
           <div className="flex mx-auto mb-4">
             <div>
@@ -194,31 +169,34 @@ const FacultyForm = () => {
           {!formData.full_day && (
             <div className="mb-4">
               <Select
-                value={timeValue || ''}
+                value={timeValue || ""}
                 name="times"
                 onChange={handleTimeChange}
+                items={timeData}
                 label="Time"
+                size="sm"
               >
-                {timeData.map((times) => (
-                  <SelectItem value={times.times} key={times.times}>
-                    {times.times}
+                {(time) => (
+                  <SelectItem value={time.times} key={time.times}>
+                    {time.times}
                   </SelectItem>
-                ))}
+                )}
               </Select>
             </div>
           )}
+
           <div className="mb-4">
             <Select
-              value={reasonValue || ''}
+              items={reasons}
+              label="Reason for Request:"
+              size="sm"
+              value={reasonValue || ""}
               name="reason"
               onChange={handleReasonChange}
-              label="Reason for Request:"
             >
-              {reasonData.map((item) => (
-                <SelectItem value={item.reason} key={item.reason}>
-                  {item.reason}
-                </SelectItem>
-              ))}
+              {(reason) => (
+                <SelectItem key={reason.value}>{reason.label}</SelectItem>
+              )}
             </Select>
           </div>
           <div className="mb-4">

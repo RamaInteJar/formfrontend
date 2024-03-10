@@ -5,7 +5,7 @@ import { Button, Checkbox, Select, SelectItem } from "@nextui-org/react";
 import { useAuth } from "@/providers/authProvider";
 import { useRouter } from "next/navigation";
 import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
+import { Input } from "@nextui-org/react";
 import toast from "react-hot-toast";
 
 const LoginPage = () => {
@@ -26,18 +26,19 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
       setIsSubmitting(true);
       await login(formData.email, formData.password);
       toast.success("Login Successful");
     } catch (err: any) {
-      toast.error(err.response.data.detail)
-    }
-    setIsSubmitting(false);
+      toast.error(err.response.data.detail);
+    } finally {
+      setIsSubmitting(false);
 
-    router.replace("/");
+      router.replace("/");
+    }
   };
 
   return (

@@ -6,7 +6,7 @@ import { Button } from '@nextui-org/react';
 import { Link } from '@nextui-org/link';
 import { useAuth } from '@/providers/authProvider';
 import { useRouter } from 'next/navigation';
-import { Input } from '@nextui-org/input';
+import { Input } from '@nextui-org/react';
 
 type SignupType = {
   username: String;
@@ -40,7 +40,7 @@ const SignupPage = () => {
     });
   };
 
-  const handleSubmit = async (e: () => void) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     try {

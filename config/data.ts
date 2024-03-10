@@ -1,21 +1,21 @@
 import React from "react";
 const columns = [
-  {name: "FACULTY ID", uid: "faculty_id", sortable: true},
-  {name: "USER", uid: "users_ct", sortable: true},
-  {name: "DUTY", uid: "duty", sortable: true},
-  {name: "REASON", uid: "reason", sortable: true},
-  {name: "SUBNEEDED", uid: "sub_needed"},
-  {name: "TIMES", uid: "times"},
-  {name: "AFTER SCHOOL", uid: "after_school"},
-  {name: "FULL DAY", uid: "full_day"},
-  {name: "STATUS", uid: "status", sortable: true},
-  {name: "ACTIONS", uid: "actions"},
+  { name: "FACULTY ID", uid: "faculty_id", sortable: true },
+  { name: "USER", uid: "users_ct", sortable: true },
+  { name: "DUTY", uid: "duty", sortable: true },
+  { name: "REASON", uid: "reason", sortable: true },
+  { name: "SUBNEEDED", uid: "sub_needed" },
+  { name: "TIMES", uid: "times" },
+  { name: "AFTER SCHOOL", uid: "after_school" },
+  { name: "FULL DAY", uid: "full_day" },
+  { name: "STATUS", uid: "status", sortable: true },
+  { name: "ACTIONS", uid: "actions" },
 ];
 
 const statusOptions = [
-  {name: "Active", uid: "active"},
-  {name: "Paused", uid: "paused"},
-  {name: "Vacation", uid: "vacation"},
+  { name: "Active", uid: "active" },
+  { name: "Paused", uid: "paused" },
+  { name: "Vacation", uid: "vacation" },
 ];
 
 const users = [
@@ -221,4 +221,80 @@ const users = [
   },
 ];
 
-export {columns, users, statusOptions};
+const animals = [
+  {
+    label: "Cat",
+    value: "cat",
+    description: "The second most popular pet in the world",
+  },
+  {
+    label: "Dog",
+    value: "dog",
+    description: "The most popular pet in the world",
+  },
+  {
+    label: "Elephant",
+    value: "elephant",
+    description: "The largest land animal",
+  },
+  { label: "Lion", value: "lion", description: "The king of the jungle" },
+  { label: "Tiger", value: "tiger", description: "The largest cat species" },
+  {
+    label: "Giraffe",
+    value: "giraffe",
+    description: "The tallest land animal",
+  },
+  {
+    label: "Dolphin",
+    value: "dolphin",
+    description: "A widely distributed and diverse group of aquatic mammals",
+  },
+  {
+    label: "Penguin",
+    value: "penguin",
+    description: "A group of aquatic flightless birds",
+  },
+  {
+    label: "Zebra",
+    value: "zebra",
+    description: "A several species of African equids",
+  },
+  {
+    label: "Shark",
+    value: "shark",
+    description:
+      "A group of elasmobranch fish characterized by a cartilaginous skeleton",
+  },
+  {
+    label: "Whale",
+    value: "whale",
+    description: "Diverse group of fully aquatic placental marine mammals",
+  },
+  {
+    label: "Otter",
+    value: "otter",
+    description: "A carnivorous mammal in the subfamily Lutrinae",
+  },
+  {
+    label: "Crocodile",
+    value: "crocodile",
+    description: "A large semiaquatic reptile",
+  },
+];
+
+const reasons = [
+  {
+    label: "Personal",
+    value: "personal",
+  },
+  {
+    label: "Professional",
+    value: "professional",
+  },
+  {
+    label: "Others",
+    value: "others",
+  },
+];
+
+export { columns, users, statusOptions, animals, reasons };

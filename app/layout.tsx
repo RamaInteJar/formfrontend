@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en"  className='dark'>
       <head />
       <body
         className={clsx(
@@ -42,7 +42,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
+        <Providers >
           <AuthProvider>
             <div className="flex">
               <div className="hidden lg:block navbar-menu relative z-50">
