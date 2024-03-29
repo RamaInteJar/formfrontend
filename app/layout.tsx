@@ -51,7 +51,7 @@ export default function RootLayout({
               <div className="flex-1 overflow-hidden">
                 <div className="relative lg:ml-56 ml-0 flex flex-col h-screen ">
                   <Navbar />
-                  <main className=" pt-16 px-6 flex-grow">{children}</main>
+                  <main className="px-6 flex-grow">{children}</main>
                 </div>
               </div>
             </div>

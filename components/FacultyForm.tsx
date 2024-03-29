@@ -6,6 +6,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { reasons } from "@/config/data";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  CalendarDaysIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/outline";
 
 const timeData = [
   {
@@ -47,6 +54,7 @@ const FacultyForm = () => {
   const [timeValue, setTimeValue] = useState(null);
   const [reasonValue, setReasonValue] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
 
   const router = useRouter();
 
@@ -126,6 +134,14 @@ const FacultyForm = () => {
 
   return (
     <div className="flex flex-col items-center justify-center px-6 ">
+      <div className="mb-5 bg-white rounded-lg  dark:bg-gray-900 dark:border-gray-700">
+        <div className="flex justify-center items-center px-2 py-4">
+          <ExclamationCircleIcon className="w-6 h-6 text-yellow-400" />
+          <p className="p-1">
+            Time off request should be submitted two weeks prior.
+          </p>
+        </div>
+      </div>
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-900 dark:border-gray-700">
         <form
           onSubmit={handleSubmit}
@@ -139,7 +155,18 @@ const FacultyForm = () => {
             onChange={handleChange}
             size="sm"
           />
-          <div className="flex mx-auto mb-4">
+          <div className="w-full items-center justify-between flex">
+            <label className="flex-1">Start Date:</label>
+            <DatePicker
+              selected={startDate}
+              showIcon
+              isClearable
+              icon={<CalendarDaysIcon className="w-6 h-6 px-4 mr-5" />}
+              onChange={(date) => setStartDate(date as Date)}
+              className="py-8 rounded-lg px-8 focus:outline-none w-full bg-['#3f3f45']"
+            />
+          </div>
+          <div className="flex mx-auto mb-4 justify-between">
             <div>
               <label>Sub Needed:</label>
               <Checkbox

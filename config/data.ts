@@ -288,8 +288,16 @@ const reasons = [
     value: "personal",
   },
   {
-    label: "Professional",
-    value: "professional",
+    label: "Maternnity Leave",
+    value: "maternity leave",
+  },
+  {
+    label: "Doctor's Appointment",
+    value: "doctor's appointment",
+  },
+  {
+    label: "Professional Development",
+    value: "professional development",
   },
   {
     label: "Others",
