@@ -33,7 +33,7 @@ const LoginPage = () => {
       await login(formData.email, formData.password);
       toast.success("Login Successful");
     } catch (err: any) {
-      toast.error(err.response.data.detail);
+      toast.error(err.response?.data?.detail);
     } finally {
       setIsSubmitting(false);
 

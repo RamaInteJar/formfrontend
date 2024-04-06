@@ -82,6 +82,7 @@ const FacultyForm = () => {
       ...formData,
       times: timeValue,
       reason: reasonValue,
+      start_date: startDate
     };
 
     if (
@@ -94,8 +95,8 @@ const FacultyForm = () => {
     }
 
     try {
-      let response = await submitForm(updatedFormData, accessToken);
       setIsSubmitted(true);
+      let response = await submitForm(updatedFormData, accessToken);
       // router.push('/faculty');
 
       if (response) {
