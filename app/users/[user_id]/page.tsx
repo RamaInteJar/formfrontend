@@ -14,7 +14,7 @@ const UserDetailsPage = () => {
 
   const fetchUser = async () => {
     if (accessToken) {
-      const response = await getUser(accessToken, user_id);
+      const response = await getUser(accessToken, user_id as string);
       setUser(response);
     }
     return null;

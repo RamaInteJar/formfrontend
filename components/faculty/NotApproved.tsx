@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { SetStateAction } from 'react';
+import React, { SetStateAction } from "react";
 import {
   Table,
   TableHeader,
@@ -17,34 +17,34 @@ import {
   Pagination,
   User,
   Spinner,
-} from '@nextui-org/react';
-import { Input } from '@nextui-org/input';
-import { columns, statusOptions } from '@/config/data';
-import { capitalize } from '@/utils/utils';
+} from "@nextui-org/react";
+import { Input } from "@nextui-org/input";
+import { columns, statusOptions } from "@/config/data";
+import { capitalize } from "@/utils/utils";
 import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-} from '@heroicons/react/24/outline';
-import { fetchFacultyForms } from '@/utils/apiCalls';
-import { useAuth } from '@/providers/authProvider';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { checkUserRole } from '@/utils/userRole';
+} from "@heroicons/react/24/outline";
+import { fetchFacultyForms } from "@/utils/apiCalls";
+import { useAuth } from "@/providers/authProvider";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { checkUserRole } from "@/utils/userRole";
 
 const statusColorMap = {
-  active: 'success',
-  paused: 'danger',
-  vacation: 'warning',
+  active: "success",
+  paused: "danger",
+  vacation: "warning",
 };
 
 type SortDescriptionType = {
-  column: 'users_ct' | 'status';
-  direction: 'ascending' | 'descending';
+  column: "users_ct" | "status";
+  direction: "ascending" | "descending";
 };
 
-type FromStatustype = 'active' | 'paused' | 'vacation';
+type FromStatustype = "active" | "paused" | "vacation";
 
 type FormType = {
   faculty_id: string;
@@ -62,30 +62,30 @@ type FormType = {
 type FormKey = keyof FormType;
 
 const INITIAL_VISIBLE_COLUMNS = [
-  'faculty_id',
-  'users_ct',
-  'duty',
-  'reason',
-  'sub_needed',
-  'times',
-  'after_school',
-  'full_day',
-  'status',
-  'actions',
+  "faculty_id",
+  "users_ct",
+  "duty",
+  "reason",
+  "sub_needed",
+  "times",
+  "after_school",
+  "full_day",
+  "status",
+  "actions",
 ];
 
 const NotApproved = ({ status_query }: { status_query: string }) => {
-  const [filterValue, setFilterValue] = React.useState('');
+  const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, setStatusFilter] = React.useState('all');
+  const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] =
     React.useState<SortDescriptionType>({
-      column: 'users_ct',
-      direction: 'ascending',
+      column: "users_ct",
+      direction: "ascending",
     });
   const [page, setPage] = React.useState(1);
   const [forms, setForms] = React.useState<FormType[]>([]);
@@ -95,7 +95,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    if (visibleColumns === 'all') return columns;
+    if (visibleColumns.has("all")) return columns;
 
     return columns.filter((column) =>
       Array.from(visibleColumns).includes(column.uid)
@@ -111,7 +111,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
       );
     }
     if (
-      statusFilter !== 'all' &&
+      statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredforms = filteredforms.filter((forms) =>
@@ -120,7 +120,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
     }
 
     return filteredforms;
-  }, [forms, filterValue, statusFilter]);
+  }, [forms, hasSearchFilter, statusFilter, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -164,7 +164,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+      return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
@@ -173,7 +173,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
       const cellValue = forms[columnKey];
 
       switch (columnKey) {
-        case 'users_ct':
+        case "users_ct":
           return (
             <User
               // avatarProps={{ radius: 'lg', src: forms?.avatar }}
@@ -183,59 +183,59 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
               {forms.users_ct}
             </User>
           );
-        case 'times':
+        case "times":
           return (
             <div className="flex flex-col">
               <p className="text-bold text-small capitalize">
-                {cellValue !== '' ? cellValue : 'Full Day'}
+                {cellValue !== "" ? cellValue : "Full Day" as any}
               </p>
             </div>
           );
-        case 'status':
+        case "status":
           return (
             <Chip
               className="capitalize"
-              color={cellValue === true ? 'success' : 'primary'}
+              color={cellValue === true ? "success" : "primary"}
               size="sm"
               variant="flat"
             >
-              {cellValue === true ? 'Appproved' : 'Not Approved'}
+              {cellValue === true ? "Appproved" : "Not Approved"}
             </Chip>
           );
-        case 'sub_needed':
+        case "sub_needed":
           return (
             <Chip
               className="capitalize"
-              color={cellValue === true ? 'success' : 'primary'}
+              color={cellValue === true ? "success" : "primary"}
               size="sm"
               variant="flat"
             >
-              {cellValue === true ? 'Yes' : 'No'}
+              {cellValue === true ? "Yes" : "No"}
             </Chip>
           );
-        case 'after_school':
+        case "after_school":
           return (
             <Chip
               className="capitalize"
-              color={cellValue === true ? 'success' : 'primary'}
+              color={cellValue === true ? "success" : "primary"}
               size="sm"
               variant="flat"
             >
-              {cellValue === true ? 'Yes' : 'No'}
+              {cellValue === true ? "Yes" : "No"}
             </Chip>
           );
-        case 'full_day':
+        case "full_day":
           return (
             <Chip
               className="capitalize"
-              color={cellValue === true ? 'success' : 'primary'}
+              color={cellValue === true ? "success" : "primary"}
               size="sm"
               variant="flat"
             >
-              {cellValue === true ? 'Yes' : 'No'}
+              {cellValue === true ? "Yes" : "No"}
             </Chip>
           );
-        case 'actions':
+        case "actions":
           return (
             <div className="relative flex justify-end items-center gap-2">
               <Dropdown>
@@ -275,7 +275,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback((e) => {
+  const onRowsPerPageChange = React.useCallback((e: { target: { value: any; }; }) => {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
   }, []);
@@ -285,12 +285,12 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
       setFilterValue(value);
       setPage(1);
     } else {
-      setFilterValue('');
+      setFilterValue("");
     }
   }, []);
 
   const onClear = React.useCallback(() => {
-    setFilterValue('');
+    setFilterValue("");
     setPage(1);
   }, []);
 
@@ -323,7 +323,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
                 closeOnSelect={false}
                 selectedKeys={statusFilter}
                 selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
+                onSelectionChange={setStatusFilter as any}
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.uid} className="capitalize">
@@ -347,7 +347,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
                 closeOnSelect={false}
                 selectedKeys={visibleColumns}
                 selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
+                onSelectionChange={setVisibleColumns as any}
               >
                 {columns.map((column) => (
                   <DropdownItem key={column.uid} className="capitalize">
@@ -356,14 +356,14 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {status_query === 'True' ? (
-              ' '
+            {status_query === "True" ? (
+              " "
             ) : (
               <Button
                 color="primary"
                 endContent={<PlusIcon />}
                 type="button"
-                onClick={() => router.push('faculty/addnew')}
+                onClick={() => router.push("faculty/addnew")}
               >
                 Add New
               </Button>
@@ -388,22 +388,14 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    statusFilter,
-    visibleColumns,
-    onRowsPerPageChange,
-    forms.length,
-    onSearchChange,
-    hasSearchFilter,
-  ]);
+  }, [filterValue, onSearchChange, statusFilter, visibleColumns, status_query, forms.length, onRowsPerPageChange, onClear, router]);
 
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === 'all'
-            ? 'All items selected'
+          {selectedKeys.size  === 0
+            ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
@@ -444,21 +436,21 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: 'max-h-[382px]',
+        wrapper: "max-h-[382px]",
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
+      onSelectionChange={setSelectedKeys as any}
+      onSortChange={setSortDescriptor as any}
     >
       <TableHeader columns={headerColumns}>
         {(column) => (
           <TableColumn
             key={column.uid}
-            align={column.uid === 'actions' ? 'center' : 'start'}
+            align={column.uid === "actions" ? "center" : "start"}
             allowsSorting={column.sortable}
           >
             {column.name}
@@ -466,15 +458,15 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
         )}
       </TableHeader>
       <TableBody
-        emptyContent={'No formss found'}
+        emptyContent={"No formss found"}
         items={sortedItems}
         loadingContent={<Spinner />}
         isLoading={isLoading}
       >
         {(item) => (
           <TableRow key={item.faculty_id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+            {(columnKey:any) => (
+              <TableCell>{renderCell(item, columnKey) as any}</TableCell>
             )}
           </TableRow>
         )}

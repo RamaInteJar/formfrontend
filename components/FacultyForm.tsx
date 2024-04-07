@@ -13,6 +13,7 @@ import {
   CalendarDaysIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
+import DateSelection from "./DateSelection";
 
 const timeData = [
   {
@@ -82,7 +83,7 @@ const FacultyForm = () => {
       ...formData,
       times: timeValue,
       reason: reasonValue,
-      start_date: startDate
+      start_date: startDate,
     };
 
     if (
@@ -158,14 +159,7 @@ const FacultyForm = () => {
           />
           <div className="w-full items-center justify-between flex">
             <label className="flex-1">Start Date:</label>
-            <DatePicker
-              selected={startDate}
-              showIcon
-              isClearable
-              icon={<CalendarDaysIcon className="w-6 h-6 px-4 mr-5" />}
-              onChange={(date) => setStartDate(date as Date)}
-              className="py-8 rounded-lg px-8 focus:outline-none w-full bg-['#3f3f45']"
-            />
+            <DateSelection />
           </div>
           <div className="flex mx-auto mb-4 justify-between">
             <div>

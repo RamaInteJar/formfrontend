@@ -1,14 +1,14 @@
-'use client';
-import { useAuth } from '@/providers/authProvider';
-import { getAllUsers } from '@/utils/apiCalls';
-import { capitalize } from '@/utils/utils';
+"use client";
+import { useAuth } from "@/providers/authProvider";
+import { getAllUsers } from "@/utils/apiCalls";
+import { capitalize } from "@/utils/utils";
 import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-} from '@heroicons/react/24/outline';
-import { Input } from '@nextui-org/input';
+} from "@heroicons/react/24/outline";
+import { Input } from "@nextui-org/input";
 import {
   Button,
   Chip,
@@ -25,41 +25,41 @@ import {
   TableRow,
   User,
   useDisclosure,
-} from '@nextui-org/react';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+} from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const INITIAL_VISIBLE_COLUMNS = [
-  'first_name',
-  'last_name',
-  'username',
-  'email',
-  'role',
-  'status',
-  'actions',
-  'is_active',
+  "first_name",
+  "last_name",
+  "username",
+  "email",
+  "role",
+  "status",
+  "actions",
+  "is_active",
 ];
 const statusColorMap = {
-  active: 'success',
-  paused: 'danger',
-  vacation: 'warning',
+  active: "success",
+  paused: "danger",
+  vacation: "warning",
 };
 const statusOptions = [
-  { name: 'Active', uid: 'active' },
-  { name: 'Paused', uid: 'paused' },
-  { name: 'Vacation', uid: 'vacation' },
+  { name: "Active", uid: "active" },
+  { name: "Paused", uid: "paused" },
+  { name: "Vacation", uid: "vacation" },
 ];
 
 const columns = [
-  { name: 'ID', uid: 'user_id', sortable: true },
-  { name: 'FIRST NAME', uid: 'first_name', sortable: true },
-  { name: 'LAST NAME', uid: 'last_name', sortable: true },
-  { name: 'USERNAME', uid: 'username', sortable: true },
-  { name: 'PHONE', uid: 'phone', sortable: true },
-  { name: 'ROLE', uid: 'role', sortable: true },
-  { name: 'EMAIL', uid: 'email' },
-  { name: 'STATUS', uid: 'is_active', sortable: true },
-  { name: 'ACTIONS', uid: 'actions' },
+  { name: "ID", uid: "user_id", sortable: true },
+  { name: "FIRST NAME", uid: "first_name", sortable: true },
+  { name: "LAST NAME", uid: "last_name", sortable: true },
+  { name: "USERNAME", uid: "username", sortable: true },
+  { name: "PHONE", uid: "phone", sortable: true },
+  { name: "ROLE", uid: "role", sortable: true },
+  { name: "EMAIL", uid: "email" },
+  { name: "STATUS", uid: "is_active", sortable: true },
+  { name: "ACTIONS", uid: "actions" },
 ];
 
 type UsersType = {
@@ -83,6 +83,15 @@ type UsersType = {
 
 type UserKey = keyof UsersType;
 
+interface ItemType {
+  [key: string]: any;
+}
+
+interface sortDescriptorType {
+  column: string;
+  direction: string;
+}
+
 const UserPage = () => {
   const { accessToken } = useAuth();
   const [userData, setUserData] = useState<UsersType[]>([]);
@@ -96,26 +105,31 @@ const UserPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    fetchAllUsers();
+    if(accessToken){
+      fetchAllUsers();
+    }
   }, [accessToken]);
 
-  const [filterValue, setFilterValue] = React.useState('');
+  const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, setStatusFilter] = React.useState('all');
+  const [statusFilter, setStatusFilter] = React.useState<any>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: 'age',
-    direction: 'ascending',
-  });
+  const [sortDescriptor, setSortDescriptor] =
+    React.useState<sortDescriptorType>({
+      column: "age",
+      direction: "ascending",
+    });
   const [page, setPage] = React.useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    if (visibleColumns === 'all') return columns;
+    if (visibleColumns.has("all")) {
+      return columns;
+    }
 
     return columns.filter((column) =>
       Array.from(visibleColumns).includes(column.uid)
@@ -131,7 +145,7 @@ const UserPage = () => {
       );
     }
     if (
-      statusFilter !== 'all' &&
+      statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredUsers = filteredUsers.filter((userData) =>
@@ -153,12 +167,12 @@ const UserPage = () => {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a, b) => {
+    return [...items].sort((a: ItemType, b: ItemType) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+      return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
@@ -167,7 +181,7 @@ const UserPage = () => {
       const cellValue = userData[columnKey];
 
       switch (columnKey) {
-        case 'user_id':
+        case "user_id":
           return (
             <User
               // avatarProps={{ radius: 'lg', src: user.avatar }}
@@ -177,7 +191,7 @@ const UserPage = () => {
               {userData.email}
             </User>
           );
-        case 'first_name':
+        case "first_name":
           return (
             <div className="flex flex-col">
               <p className="text-bold text-small capitalize">
@@ -188,7 +202,7 @@ const UserPage = () => {
               </p>
             </div>
           );
-        case 'role':
+        case "role":
           return (
             <div className="flex flex-col">
               <p className="text-bold text-small capitalize">
@@ -199,18 +213,18 @@ const UserPage = () => {
               </p>
             </div>
           );
-        case 'is_active':
+        case "is_active":
           return (
             <Chip
               className="capitalize"
-              color={cellValue === userData.is_active ? 'success' : 'primary'}
+              color={cellValue === userData.is_active ? "success" : "primary"}
               size="sm"
               variant="flat"
             >
-              {cellValue === userData.is_active ? 'Active' : 'Not Active'}
+              {cellValue === userData.is_active ? "Active" : "Not Active"}
             </Chip>
           );
-        case 'actions':
+        case "actions":
           return (
             <div className="relative flex justify-end items-center gap-2">
               <Dropdown>
@@ -249,22 +263,28 @@ const UserPage = () => {
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback((e) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  }, []);
-
-  const onSearchChange = React.useCallback((value) => {
-    if (value) {
-      setFilterValue(value);
+  const onRowsPerPageChange = React.useCallback(
+    (e: { target: { value: any } }) => {
+      setRowsPerPage(Number(e.target.value));
       setPage(1);
-    } else {
-      setFilterValue('');
-    }
-  }, []);
+    },
+    []
+  );
+
+  const onSearchChange = React.useCallback(
+    (value: React.SetStateAction<string>) => {
+      if (value) {
+        setFilterValue(value);
+        setPage(1);
+      } else {
+        setFilterValue("");
+      }
+    },
+    []
+  );
 
   const onClear = React.useCallback(() => {
-    setFilterValue('');
+    setFilterValue("");
     setPage(1);
   }, []);
 
@@ -321,7 +341,7 @@ const UserPage = () => {
                 closeOnSelect={false}
                 selectedKeys={visibleColumns}
                 selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
+                onSelectionChange={setVisibleColumns as any}
               >
                 {columns.map((column) => (
                   <DropdownItem key={column.uid} className="capitalize">
@@ -353,22 +373,14 @@ const UserPage = () => {
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    statusFilter,
-    visibleColumns,
-    onRowsPerPageChange,
-    userData.length,
-    onSearchChange,
-    hasSearchFilter,
-  ]);
+  }, [filterValue, onSearchChange, statusFilter, visibleColumns, userData.length, onRowsPerPageChange, onClear]);
 
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === 'all'
-            ? 'All items selected'
+          {selectedKeys.size === 0
+            ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
@@ -400,7 +412,14 @@ const UserPage = () => {
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [
+    selectedKeys.size,
+    filteredItems.length,
+    page,
+    pages,
+    onPreviousPage,
+    onNextPage,
+  ]);
 
   return (
     <Table
@@ -409,32 +428,32 @@ const UserPage = () => {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: 'max-h-[382px]',
+        wrapper: "max-h-[382px]",
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
+      sortDescriptor={sortDescriptor as any}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
+      onSelectionChange={setSelectedKeys as any}
+      onSortChange={setSortDescriptor as any}
     >
       <TableHeader columns={headerColumns}>
         {(column) => (
           <TableColumn
             key={column.uid}
-            align={column.uid === 'actions' ? 'center' : 'start'}
+            align={column.uid === "actions" ? "center" : "start"}
             allowsSorting={column.sortable}
           >
             {column.name}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={'No users found'} items={sortedItems}>
+      <TableBody emptyContent={"No users found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.user_id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell>{renderCell(item, columnKey as any) as any}</TableCell>
             )}
           </TableRow>
         )}
