@@ -55,6 +55,8 @@ type FormType = {
   times: string;
   after_school: Boolean;
   full_day: Boolean;
+  emergency: Boolean;
+  descriptions: string;
   status: Boolean;
   actions: string;
 };
@@ -70,6 +72,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "times",
   "after_school",
   "full_day",
+  "emergency",
+  "descritpions",
   "status",
   "actions",
 ];
@@ -187,7 +191,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
           return (
             <div className="flex flex-col">
               <p className="text-bold text-small capitalize">
-                {cellValue !== "" ? cellValue : "Full Day" as any}
+                {cellValue !== "" ? cellValue : ("Full Day" as any)}
               </p>
             </div>
           );
@@ -235,6 +239,17 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
               {cellValue === true ? "Yes" : "No"}
             </Chip>
           );
+        case "emergency":
+          return (
+            <Chip
+              className="capitalize"
+              color={cellValue === true ? "danger" : "primary"}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue === true ? "Emergency" : "Not Emergency"}
+            </Chip>
+          );
         case "actions":
           return (
             <div className="relative flex justify-end items-center gap-2">
@@ -275,10 +290,13 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback((e: { target: { value: any; }; }) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  }, []);
+  const onRowsPerPageChange = React.useCallback(
+    (e: { target: { value: any } }) => {
+      setRowsPerPage(Number(e.target.value));
+      setPage(1);
+    },
+    []
+  );
 
   const onSearchChange = React.useCallback((value: SetStateAction<string>) => {
     if (value) {
@@ -388,13 +406,23 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
         </div>
       </div>
     );
-  }, [filterValue, onSearchChange, statusFilter, visibleColumns, status_query, forms.length, onRowsPerPageChange, onClear, router]);
+  }, [
+    filterValue,
+    onSearchChange,
+    statusFilter,
+    visibleColumns,
+    status_query,
+    forms.length,
+    onRowsPerPageChange,
+    onClear,
+    router,
+  ]);
 
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys.size  === 0
+          {selectedKeys.size === 0
             ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
@@ -465,7 +493,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
       >
         {(item) => (
           <TableRow key={item.faculty_id}>
-            {(columnKey:any) => (
+            {(columnKey: any) => (
               <TableCell>{renderCell(item, columnKey) as any}</TableCell>
             )}
           </TableRow>
