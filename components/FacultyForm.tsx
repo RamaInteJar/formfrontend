@@ -1,18 +1,21 @@
 "use client";
 import { useAuth } from "@/providers/authProvider";
 import { sendEmailNotification, submitForm } from "@/utils/apiCalls";
-import { Select, Checkbox, SelectItem, Button, Input } from "@nextui-org/react";
+import {
+  Select,
+  Checkbox,
+  SelectItem,
+  Button,
+  Input,
+  Textarea,
+} from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { reasons } from "@/config/data";
-import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  CalendarDaysIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/24/outline";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import DateSelection from "./DateSelection";
 
 const timeData = [
@@ -39,6 +42,8 @@ type formDataType = {
   after_school: boolean;
   duty: string | null;
   reason: string | null;
+  emergency: boolean;
+  descriptions: string | null;
 };
 
 const FacultyForm = () => {
@@ -49,6 +54,8 @@ const FacultyForm = () => {
     after_school: false,
     duty: null,
     reason: null,
+    emergency: false,
+    descriptions: null,
   });
   const { accessToken } = useAuth();
 
@@ -98,7 +105,6 @@ const FacultyForm = () => {
     try {
       setIsSubmitted(true);
       let response = await submitForm(updatedFormData, accessToken);
-      // router.push('/faculty');
 
       if (response) {
         toast.success(response.message);
@@ -130,7 +136,10 @@ const FacultyForm = () => {
         duty: null,
         times: null,
         reason: null,
+        emergency: false,
+        descriptions: null,
       });
+      
     }
   };
 
@@ -157,10 +166,31 @@ const FacultyForm = () => {
             onChange={handleChange}
             size="sm"
           />
-          <div className="w-full items-center justify-between flex">
-            <label className="flex-1">Start Date:</label>
-            <DateSelection />
+          <div className="flex mx-auto mb-4 justify-between">
+            <div className="mb-4">
+              <label>After School Duty:</label>
+              <Checkbox
+                name="after_school"
+                checked={formData.after_school}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-4">
+              <label>Emergency:</label>
+              <Checkbox
+                name="emergency"
+                checked={formData.emergency}
+                onChange={handleChange}
+              />
+            </div>
           </div>
+          {!formData.emergency && (
+            <div className="w-full items-center justify-between flex">
+              <label className="flex-1">Start Date:</label>
+              <DateSelection />
+            </div>
+          )}
+
           <div className="flex mx-auto mb-4 justify-between">
             <div>
               <label>Sub Needed:</label>
@@ -178,14 +208,6 @@ const FacultyForm = () => {
                 onChange={handleChange}
               />
             </div>
-          </div>
-          <div className="mb-4">
-            <label>After School Duty:</label>
-            <Checkbox
-              name="after_school"
-              checked={formData.after_school}
-              onChange={handleChange}
-            />
           </div>
 
           {!formData.full_day && (
@@ -221,6 +243,21 @@ const FacultyForm = () => {
               )}
             </Select>
           </div>
+
+          {reasonValue === "others" && (
+            <Textarea
+              // isInvalid={true}
+              variant="bordered"
+              label="Description"
+              placeholder="Enter your description"
+              name="descriptions"
+              value={formData.descriptions || ""}
+              onChange={handleChange}
+              // errorMessage="The description should be at least 255 characters long."
+              className="w-full"
+            />
+          )}
+
           <div className="mb-4">
             {isSubmitted ? (
               <Button
