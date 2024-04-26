@@ -10,3 +10,9 @@ export interface IEmailData {
   message: string;
   recipients: string[];
 }
+
+
+export type DateType = {
+  startDate: Date;
+  onDateChange: () => Date;
+};

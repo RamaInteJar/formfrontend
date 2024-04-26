@@ -290,7 +290,7 @@ const reasons = [
     value: "personal",
   },
   {
-    label: "Maternnity Leave",
+    label: "Maternity Leave",
     value: "maternity leave",
   },
   {

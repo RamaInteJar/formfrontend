@@ -2,7 +2,7 @@
 import { useAuth } from '@/providers/authProvider';
 import { IEmailData } from '@/types';
 import { ApproveForm, sendEmailNotification } from '@/utils/apiCalls';
-import { Textarea } from '@nextui-org/input';
+import { Textarea } from '@nextui-org/react';
 import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';

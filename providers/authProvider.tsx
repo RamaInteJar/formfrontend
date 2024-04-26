@@ -4,12 +4,11 @@ import {
   useContext,
   useEffect,
   useState,
-} from 'react';
-import axios, { AxiosError } from 'axios';
-import Cookies from 'js-cookie';
-import { baseUrl } from '@/config/apiConfig';
-import { useRouter } from 'next/navigation';
-import { axisoInstance } from '@/utils/axiosInstance';
+} from "react";
+import axios, { AxiosError } from "axios";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { axisoInstance } from "@/utils/axiosInstance";
 
 interface User {
   username: string;
@@ -54,8 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
 
   useEffect(() => {
-    const accessToken = Cookies.get('accessToken');
-    const refreshToken = Cookies.get('refreshToken');
+    const accessToken = Cookies.get("accessToken");
+    const refreshToken = Cookies.get("refreshToken");
     if (accessToken && refreshToken) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
@@ -75,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     try {
       const response = await axisoInstance.post<regiterType>(
-        '/accounts/register',
+        "/accounts/register",
         {
           first_name,
           last_name,
@@ -87,14 +86,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       );
       if (response.status == 201) {
-        console.log('User registered successfull');
+        console.log("User registered successfull");
       }
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Registration failed:", error);
       if (axios.isAxiosError(error)) {
-        console.error('Registration failed:', error);
+        console.error("Registration failed:", error);
         if (error.response) {
-          console.error('Server response:', error.response.data);
+          console.error("Server response:", error.response.data);
         }
       }
     }
@@ -104,19 +103,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const res = await axisoInstance.post<{
       access: string;
       refresh: string;
-    }>('/accounts/token', {
+    }>("/accounts/token", {
       email,
       password,
     });
     setAccessToken(res.data.access);
     setRefreshToken(res.data.refresh);
-    Cookies.set('accessToken', res.data.access);
-    Cookies.set('refreshToken', res.data.refresh);
+    Cookies.set("accessToken", res.data.access);
+    Cookies.set("refreshToken", res.data.refresh);
   };
 
   const getLoggedInuser = (token: string) => {
     try {
-      const tokenParts = token.split('.');
+      const tokenParts = token.split(".");
       if (tokenParts.length === 3) {
         const encodedPayload = tokenParts[1];
         const rawPayload = atob(encodedPayload);
@@ -128,24 +127,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return data;
       }
     } catch (error) {
-      console.error('Error decoding token:', error);
+      console.error("Error decoding token:", error);
     }
     return null;
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
-    router.push('/auth');
-  };
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    router.push("/auth");
+  }, [router]);
 
   const isTokenExpired = useCallback(() => {
     if (!accessToken) {
       return true;
     }
-    const tokenParts = accessToken.split('.');
+    const tokenParts = accessToken.split(".");
     if (tokenParts.length !== 3) {
       return true;
     }
@@ -223,7 +222,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             //   return axios(originalRequest);
             // }
           } catch (refreshError) {
-            console.error('Token refersh failed', refreshError);
             logout();
             return Promise.reject(error);
           }
@@ -236,7 +234,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [accessToken, refreshToken]);
+  }, [accessToken, logout, refreshToken]);
 
   return (
     <AuthContext.Provider
@@ -250,7 +248,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

@@ -1,7 +1,8 @@
-import ApproveFormComponent from '@/components/ApproveFormComponent';
-import { fetchFacultyForm } from '@/utils/apiCalls';
+import ApproveFormComponent from "@/components/ApproveFormComponent";
+import { fetchFacultyForm } from "@/utils/apiCalls";
+import { Button, Link } from "@nextui-org/react";
 
-import React from 'react';
+import React from "react";
 
 type FacultyType = {
   faculty_id: string;
@@ -26,8 +27,13 @@ const FacultyDetails = async ({
 
   return (
     <div>
-      <h1>Application Details {form?.faculty_id}</h1>
-      <div className="mb-10 pt-6">
+      <div className="flex justify-between items-center">
+        <h1>Application Details {form?.faculty_id}</h1>
+        <Button color="primary" variant="bordered">
+          <Link href="/faculty">Back</Link>
+        </Button>
+      </div>
+      <div className="mb-10 pt-6 items-center justify-center">
         <div className="mb-10">
           <h2 className="text-2xl font-semibold">Personal Details</h2>
           <div className="flex flex-col md:flex-row md:space-x-10">
@@ -46,11 +52,11 @@ const FacultyDetails = async ({
               <p className="text-lg">{form.duty}</p>
               <p className="text-lg">{form.reason}</p>
               <p className="text-lg">{form.times}</p>
-              <p className="text-lg">{form.sub_needed ? 'Yes' : 'No'}</p>
-              <p className="text-lg">{form.full_day ? 'Yes' : 'No'}</p>
-              <p className="text-lg">{form.after_school ? 'Yes' : 'No'}</p>
+              <p className="text-lg">{form.sub_needed ? "Yes" : "No"}</p>
+              <p className="text-lg">{form.full_day ? "Yes" : "No"}</p>
+              <p className="text-lg">{form.after_school ? "Yes" : "No"}</p>
               <p className="text-lg">
-                {form.status ? 'Approved' : 'Not Approved'}
+                {form.status ? "Approved" : "Not Approved"}
               </p>
             </div>
           </div>

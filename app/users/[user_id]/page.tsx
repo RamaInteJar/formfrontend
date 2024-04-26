@@ -1,13 +1,29 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import { Input } from '@nextui-org/input';
-import { Button } from '@nextui-org/react';
-import { useAuth } from '@/providers/authProvider';
-import { getUser } from '@/utils/apiCalls';
-import { useParams } from 'next/navigation';
+"use client";
+import React, { useEffect, useState } from "react";
+import { Button, Input } from "@nextui-org/react";
+import { useAuth } from "@/providers/authProvider";
+import { getUser } from "@/utils/apiCalls";
+import { useParams } from "next/navigation";
+
+interface IUser {
+  user_id: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  last_login: string;
+  role: string;
+  start_date: string;
+  phone: string;
+  is_staff: boolean;
+  is_active: boolean;
+  is_superuser: boolean;
+  groups: any[];
+  user_permissions: any[];
+}
 
 const UserDetailsPage = () => {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState<IUser | null>(null);
 
   const { accessToken } = useAuth();
   const { user_id } = useParams();
@@ -24,8 +40,6 @@ const UserDetailsPage = () => {
     fetchUser();
   }, [accessToken]);
 
-  console.log(user);
-
   return (
     <div className="flex flex-col items-center justify-center px-6 ">
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-900 dark:border-gray-700">
@@ -41,7 +55,7 @@ const UserDetailsPage = () => {
                   type="text"
                   size="sm"
                   name="first_name"
-                  //   value={signupData.first_name || ''}
+                  // value={user?.first_name ?? ""}
                   //   onChange={handleChange}
                 />
               </div>
@@ -51,7 +65,7 @@ const UserDetailsPage = () => {
                   name="last_name"
                   type="text"
                   size="sm"
-                  //   value={signupData.last_name || ''}
+                  // value={user?.last_name ?? ""}
                   //   onChange={handleChange}
                 />
               </div>

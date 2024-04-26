@@ -18,7 +18,7 @@ import {
   User,
   Spinner,
 } from "@nextui-org/react";
-import { Input } from "@nextui-org/input";
+import { Input } from "@nextui-org/react";
 import { columns, statusOptions } from "@/config/data";
 import { capitalize } from "@/utils/utils";
 import {
@@ -160,7 +160,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
     };
 
     fetchData();
-  }, [accessToken]);
+  }, [accessToken, status_query]);
 
   const sortedItems = React.useMemo(() => {
     return [...items].sort((a, b) => {
@@ -275,7 +275,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
           return cellValue;
       }
     },
-    []
+    [isAdmin, router]
   );
 
   const onNextPage = React.useCallback(() => {
@@ -455,7 +455,7 @@ const NotApproved = ({ status_query }: { status_query: string }) => {
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [selectedKeys.size, filteredItems.length, page, pages, onPreviousPage, onNextPage]);
 
   return (
     <Table

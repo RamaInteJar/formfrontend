@@ -8,7 +8,7 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import { Input } from "@nextui-org/input";
+import { Input } from "@nextui-org/react";
 import {
   Button,
   Chip,
@@ -105,10 +105,10 @@ const UserPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if(accessToken){
+    if (accessToken) {
       fetchAllUsers();
     }
-  }, [accessToken]);
+  });
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -154,7 +154,7 @@ const UserPage = () => {
     }
 
     return filteredUsers;
-  }, [userData, filterValue, statusFilter]);
+  }, [userData, hasSearchFilter, statusFilter, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -248,7 +248,7 @@ const UserPage = () => {
           return cellValue;
       }
     },
-    []
+    [router]
   );
 
   const onNextPage = React.useCallback(() => {
@@ -373,7 +373,15 @@ const UserPage = () => {
         </div>
       </div>
     );
-  }, [filterValue, onSearchChange, statusFilter, visibleColumns, userData.length, onRowsPerPageChange, onClear]);
+  }, [
+    filterValue,
+    onSearchChange,
+    statusFilter,
+    visibleColumns,
+    userData.length,
+    onRowsPerPageChange,
+    onClear,
+  ]);
 
   const bottomContent = React.useMemo(() => {
     return (

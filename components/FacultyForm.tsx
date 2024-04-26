@@ -8,15 +8,15 @@ import {
   Button,
   Input,
   Textarea,
+  DatePicker,
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { reasons } from "@/config/data";
-
-import "react-datepicker/dist/react-datepicker.css";
+import { getLocalTimeZone, today } from "@internationalized/date";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import DateSelection from "./DateSelection";
+import { parseDate } from "@internationalized/date";
 
 const timeData = [
   {
@@ -46,6 +46,10 @@ type formDataType = {
   descriptions: string | null;
 };
 
+const nowDate = new Date();
+const isoDateString = nowDate.toISOString();
+const datePartOnly = isoDateString.split("T")[0];
+
 const FacultyForm = () => {
   const [formData, setFormData] = useState<formDataType>({
     sub_needed: false,
@@ -62,7 +66,10 @@ const FacultyForm = () => {
   const [timeValue, setTimeValue] = useState(null);
   const [reasonValue, setReasonValue] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
+
+  const [startDate, setStartDate] = useState(
+    parseDate(datePartOnly.toString())
+  );
 
   const router = useRouter();
 
@@ -90,7 +97,7 @@ const FacultyForm = () => {
       ...formData,
       times: timeValue,
       reason: reasonValue,
-      start_date: startDate,
+      start_date: startDate.toString(),
     };
 
     if (
@@ -139,7 +146,6 @@ const FacultyForm = () => {
         emergency: false,
         descriptions: null,
       });
-      
     }
   };
 
@@ -171,23 +177,32 @@ const FacultyForm = () => {
               <label>After School Duty:</label>
               <Checkbox
                 name="after_school"
-                checked={formData.after_school}
+                isSelected={formData.after_school}
                 onChange={handleChange}
+                isDisabled={formData.emergency ?? formData.after_school}
               />
             </div>
             <div className="mb-4">
               <label>Emergency:</label>
               <Checkbox
                 name="emergency"
-                checked={formData.emergency}
+                isSelected={formData.emergency}
                 onChange={handleChange}
+                isDisabled={formData.after_school ?? formData.emergency}
               />
             </div>
           </div>
           {!formData.emergency && (
             <div className="w-full items-center justify-between flex">
-              <label className="flex-1">Start Date:</label>
-              <DateSelection />
+              <DatePicker
+                label="Start Date"
+                variant="flat"
+                showMonthAndYearPickers
+                value={startDate}
+                onChange={setStartDate}
+                minValue={today(getLocalTimeZone())}
+                defaultValue={today(getLocalTimeZone()).subtract({ days: 14 })}
+              />
             </div>
           )}
 
@@ -196,7 +211,8 @@ const FacultyForm = () => {
               <label>Sub Needed:</label>
               <Checkbox
                 name="sub_needed"
-                checked={formData.sub_needed}
+                isSelected={formData.sub_needed}
+                isDisabled={formData.full_day ?? formData.sub_needed}
                 onChange={handleChange}
               />
             </div>
@@ -204,7 +220,8 @@ const FacultyForm = () => {
               <label>Full Day:</label>
               <Checkbox
                 name="full_day"
-                checked={formData.full_day}
+                isSelected={formData.full_day}
+                isDisabled={formData.sub_needed ?? formData.full_day}
                 onChange={handleChange}
               />
             </div>
