@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { reasons } from "@/config/data";
+import { paymentMode, paymentOptions, reasons } from "@/config/data";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { parseDate } from "@internationalized/date";
@@ -42,6 +42,8 @@ type formDataType = {
   after_school: boolean;
   duty: string | null;
   reason: string | null;
+  paying_option: string | null;
+  payment_mode: string | null;
   emergency: boolean;
   descriptions: string | null;
 };
@@ -58,6 +60,8 @@ const FacultyForm = () => {
     after_school: false,
     duty: null,
     reason: null,
+    paying_option: null,
+    payment_mode: null,
     emergency: false,
     descriptions: null,
   });
@@ -65,11 +69,14 @@ const FacultyForm = () => {
 
   const [timeValue, setTimeValue] = useState(null);
   const [reasonValue, setReasonValue] = useState(null);
+  const [paymentOptionsValue, setPaymentOptionsValue] = useState(null);
+  const [paymentModeValue, setPaymentModeValue] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [startDate, setStartDate] = useState(
     parseDate(datePartOnly.toString())
   );
+  const [endDate, setEndDate] = useState(parseDate(datePartOnly.toString()));
 
   const router = useRouter();
 
@@ -88,6 +95,12 @@ const FacultyForm = () => {
   const handleReasonChange = (e: any) => {
     setReasonValue(e.target.value);
   };
+  const handlePaymentOptionsChange = (e: any) => {
+    setPaymentOptionsValue(e.target.value);
+  };
+  const handlePaymentModeChange = (e: any) => {
+    setPaymentModeValue(e.target.value);
+  };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -97,7 +110,10 @@ const FacultyForm = () => {
       ...formData,
       times: timeValue,
       reason: reasonValue,
+      paying_option: paymentOptionsValue,
+      payment_mode: paymentModeValue,
       start_date: startDate.toString(),
+      end_date: endDate.toString(),
     };
 
     if (
@@ -143,6 +159,8 @@ const FacultyForm = () => {
         duty: null,
         times: null,
         reason: null,
+        paying_option: null,
+        payment_mode: null,
         emergency: false,
         descriptions: null,
       });
@@ -150,8 +168,8 @@ const FacultyForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center px-6 ">
-      <div className="mb-5 bg-white rounded-lg  dark:bg-gray-900 dark:border-gray-700">
+    <div className="flex flex-col w-full items-center justify-center px-6 ">
+      <div className="mb-5 bg-white rounded-lg  dark:bg-gray-900 dark:border-gray-700 sm:max-w-3xl w-full">
         <div className="flex justify-center items-center px-2 py-4">
           <ExclamationCircleIcon className="w-6 h-6 text-yellow-400" />
           <p className="p-1">
@@ -159,7 +177,7 @@ const FacultyForm = () => {
           </p>
         </div>
       </div>
-      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-900 dark:border-gray-700">
+      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-3xl xl:p-0 dark:bg-gray-900 dark:border-gray-700">
         <form
           onSubmit={handleSubmit}
           className="p-6 space-y-4 md:space-y-6 sm:p-8"
@@ -193,16 +211,31 @@ const FacultyForm = () => {
             </div>
           </div>
           {!formData.emergency && (
-            <div className="w-full items-center justify-between flex">
-              <DatePicker
-                label="Start Date"
-                variant="flat"
-                showMonthAndYearPickers
-                value={startDate}
-                onChange={setStartDate}
-                minValue={today(getLocalTimeZone())}
-                defaultValue={today(getLocalTimeZone()).subtract({ days: 14 })}
-              />
+            <div className="flex flex-wrap -mx-4">
+              <div className="items-center w-full md:w-1/2 px-3 mb-6">
+                <DatePicker
+                  label="Start Date"
+                  variant="flat"
+                  showMonthAndYearPickers
+                  value={startDate}
+                  onChange={setStartDate}
+                  minValue={today(getLocalTimeZone())}
+                  defaultValue={today(getLocalTimeZone()).subtract({
+                    days: 14,
+                  })}
+                />
+              </div>
+              <div className="items-center w-full md:w-1/2 px-3">
+                <DatePicker
+                  label="End Date"
+                  variant="flat"
+                  showMonthAndYearPickers
+                  value={endDate}
+                  onChange={setEndDate}
+                  minValue={today(getLocalTimeZone())}
+                  defaultValue={today(getLocalTimeZone())}
+                />
+              </div>
             </div>
           )}
 
@@ -259,6 +292,38 @@ const FacultyForm = () => {
                 <SelectItem key={reason.value}>{reason.label}</SelectItem>
               )}
             </Select>
+          </div>
+          <div className="flex flex-wrap -mx-4">
+            <div className="mb-4 w-full md:w-1/2 px-3">
+              <Select
+                items={paymentOptions}
+                label="Payment Options:"
+                size="sm"
+                value={paymentOptionsValue || ""}
+                name="paying_option"
+                onChange={handlePaymentOptionsChange}
+              >
+                {(paymentOption) => (
+                  <SelectItem key={paymentOption.value}>
+                    {paymentOption.label}
+                  </SelectItem>
+                )}
+              </Select>
+            </div>
+            <div className="mb-4 w-full md:w-1/2 px-3">
+              <Select
+                items={paymentMode}
+                label="Payment Mode:"
+                size="sm"
+                value={paymentModeValue || ""}
+                name="payment_mode"
+                onChange={handlePaymentModeChange}
+              >
+                {(payment) => (
+                  <SelectItem key={payment.value}>{payment.label}</SelectItem>
+                )}
+              </Select>
+            </div>
           </div>
 
           {reasonValue === "others" && (

@@ -25,6 +25,7 @@ const FacultyDetails = async ({
 }) => {
   const form = await fetchFacultyForm(params.faculty_id);
 
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -45,23 +46,29 @@ const FacultyDetails = async ({
               <p className="text-lg font-semibold">Sub Needed</p>
               <p className="text-lg font-semibold">Full Day</p>
               <p className="text-lg font-semibold">After School Duty</p>
+              <p className="text-lg font-semibold">Number of days requested</p>
+              <p className="text-lg font-semibold">Payment Option</p>
+              <p className="text-lg font-semibold">Payment Mode</p>
               <p className="text-lg font-semibold">Status</p>
             </div>
             <div className="flex flex-col space-y-2">
-              <p className="text-lg">{form.users_ct}</p>
-              <p className="text-lg">{form.duty}</p>
-              <p className="text-lg">{form.reason}</p>
-              <p className="text-lg">{form.times}</p>
-              <p className="text-lg">{form.sub_needed ? "Yes" : "No"}</p>
-              <p className="text-lg">{form.full_day ? "Yes" : "No"}</p>
-              <p className="text-lg">{form.after_school ? "Yes" : "No"}</p>
+              <p className="text-lg">{form?.users_ct}</p>
+              <p className="text-lg">{form?.duty}</p>
+              <p className="text-lg">{form?.reason}</p>
+              <p className="text-lg">{form?.times}</p>
+              <p className="text-lg">{form?.sub_needed ? "Yes" : "No"}</p>
+              <p className="text-lg">{form?.full_day ? "Yes" : "No"}</p>
+              <p className="text-lg">{form?.after_school ? "Yes" : "No"}</p>
+              <p className="text-lg">{form?.days_requesting}</p>
+              <p className="text-lg">{form?.paying_option}</p>
+              <p className="text-lg">{form?.payment_mode}</p>
               <p className="text-lg">
-                {form.status ? "Approved" : "Not Approved"}
+                {form?.status ? "Approved" : "PENDING"}
               </p>
             </div>
           </div>
         </div>
-        <ApproveFormComponent faculty_id={form.faculty_id} email={form.email} />
+        <ApproveFormComponent faculty_id={form?.faculty_id} email={form?.email} />
       </div>
     </div>
   );
