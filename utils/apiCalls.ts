@@ -1,6 +1,7 @@
-import { IEmailData } from '@/types';
-import { axisoInstance } from './axiosInstance';
-import Cookies from 'js-cookie';
+import { IEmailData } from "@/types";
+import { axisoInstance } from "./axiosInstance";
+import Cookies from "js-cookie";
+import { redirect } from "next/navigation";
 
 interface formDataType {
   times: string;
@@ -11,13 +12,11 @@ interface formDataType {
   duty: string;
 }
 
-
-
 interface facultResponse {
   reason: string;
 }
 
-const accessToken = Cookies.get('accessToken');
+const accessToken = Cookies.get("accessToken");
 
 export const submitForm = async (
   formData: formDataType,
@@ -26,7 +25,7 @@ export const submitForm = async (
   const response = await axisoInstance.post(`/faculty/forms`, formData, {
     headers: {
       Authorization: `Bearer ${authToken}`, // Include your authentication token here
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
@@ -42,13 +41,13 @@ export const fetchFacultyForms = async (
     const response = await axisoInstance.get(`/faculty/forms${query}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching faculty forms:', error);
+    console.error("Error fetching faculty forms:", error);
     throw error;
   }
 };
@@ -59,13 +58,13 @@ export const fetchFacultyForm = async (faculty_id: string) => {
     const response = await axisoInstance.get(`/faculty/form${query}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching faculty forms:', error);
+    console.error("Error fetching faculty forms:", error);
   }
 };
 
@@ -82,7 +81,7 @@ export const ApproveForm = async (
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     }
   );
@@ -99,13 +98,13 @@ export const fetchFacultyFormApproved = async (
     const response = await axisoInstance.get(`/faculty/form/approved${query}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching faculty forms:', error);
+    console.error("Error fetching faculty forms:", error);
   }
 };
 
@@ -114,13 +113,13 @@ export const getAllUsers = async (accessToken: string | null) => {
     const response = await axisoInstance.get(`/accounts/users`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching faculty forms:', error);
+    console.error("Error fetching faculty forms:", error);
   }
 };
 export const getUser = async (accessToken: string | null, user_id: string) => {
@@ -129,22 +128,41 @@ export const getUser = async (accessToken: string | null, user_id: string) => {
     const response = await axisoInstance.get(`/accounts/user${query}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    console.error("Error fetching user details:", error);
   }
 };
 
 export const sendEmailNotification = async (emailData: IEmailData) => {
-  const response = await axisoInstance.post('/send-email', emailData, {
+  const response = await axisoInstance.post("/send-email", emailData, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
   return response.data;
+};
+
+export const getDashboardData = async (accessToken: string | null) => {
+  try {
+    if (!accessToken) {
+      throw new Error("Authorization Error");
+    }
+
+    const response = await axisoInstance.get(`/dashboard`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching faculty forms:", error);
+  }
 };
