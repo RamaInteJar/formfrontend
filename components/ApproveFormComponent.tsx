@@ -9,8 +9,8 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface ApproveFromProps {
-  faculty_id: string;
-  email: string;
+  faculty_id: string | undefined;
+  email: string | undefined;
 }
 
 const ApproveFormComponent: React.FC<ApproveFromProps> = ({
@@ -40,7 +40,7 @@ const ApproveFormComponent: React.FC<ApproveFromProps> = ({
           let emailData: IEmailData = {
             subject: 'Time off Approval',
             message: formData,
-            recipients: [email],
+            recipients: [email || ''],
           };
 
           const sent_email = await sendEmailNotification(emailData);

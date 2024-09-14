@@ -52,7 +52,7 @@ export const fetchFacultyForms = async (
   }
 };
 
-export const fetchFacultyForm = async (faculty_id: string) => {
+export const fetchFacultyForm = async (faculty_id: string, accessToken: string | null) => {
   try {
     const query = `?faculty_id=${faculty_id}`;
     const response = await axisoInstance.get(`/faculty/form${query}`, {
@@ -69,7 +69,7 @@ export const fetchFacultyForm = async (faculty_id: string) => {
 };
 
 export const ApproveForm = async (
-  form_id: string,
+  form_id: string | undefined,
   formData: string,
   accessToken: string | null
 ) => {
@@ -90,7 +90,7 @@ export const ApproveForm = async (
 };
 
 export const fetchFacultyFormApproved = async (
-  faculty_id: string,
+  faculty_id: string | undefined,
   accessToken: string | null
 ) => {
   try {
